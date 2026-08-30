@@ -1,7 +1,7 @@
 # DFU Analysis Console
 
 Self-contained web app for diabetic foot ulcer analysis. One FastAPI service serves
-both the ML inference API **and** the React frontend — no database, no separate build step.
+both the ML inference API **and** the React frontend
 
 **Pipeline (ported verbatim from the trained notebooks):**
 segmentation (U-Net++ / EfficientNet-B4, FP16 ONNX) → wound feature extraction →
