@@ -17,7 +17,7 @@ pip install -r requirements.txt
 uvicorn main:app --port 8000
 ```
 
-3. Open **http://localhost:8000** — upload a foot image, get results.
+3. Open **http://localhost:8010** — upload a foot image, get results.
 
 That's it. Deliverables 1 (segmentation + grading), 2 (infection severity), and
 4 (mobile-friendly inference) are all live in this single app.
