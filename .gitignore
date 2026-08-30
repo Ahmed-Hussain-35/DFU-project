@@ -1,0 +1,12 @@
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.env
+.pytest_cache/
+.vscode/
+.idea/
+
+best_model.pth
+dfu_app.db
+uploads/

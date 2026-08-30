@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DFU Clinical Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  :root{
+    --bg:#0b0f14;--bg2:#0e141b;--panel:#12191f;--panel2:#161f27;
+    --line:#212d38;--line2:#2b3a47;--ink:#e8eef4;--ink-dim:#8a99a8;--ink-faint:#5b6b7a;
+    --teal:#38c2b6;--teal-dim:#1c5a55;
+  }
+  /* Doctor mode: full warm palette swap (not just accent color) so the
+     page reads visibly different at a glance, applied via a body class. */
+  body.doctor-scope{
+    --teal:#e0a458; --teal-dim:#6b4a1c;
+    --bg:#181109; --bg2:#1d140a; --panel:#241a0c; --panel2:#2c2010;
+    --line:#3d2c14; --line2:#4e3a1a;
+    background:radial-gradient(1200px 600px at 78% -10%,#4a2a0a88,transparent 60%),
+      linear-gradient(180deg,var(--bg),var(--bg2));
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{
+    background:radial-gradient(1200px 600px at 78% -10%,#10202688,transparent 60%),
+      linear-gradient(180deg,var(--bg),var(--bg2));
+    color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+  #root{min-height:100vh;display:flex;flex-direction:column}
+
+  /* ---------- layout shell ---------- */
+  .wrap{max-width:1200px;width:100%;margin:0 auto;padding:0 24px;flex:1;display:flex;flex-direction:column}
+  header.top{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:22px 0;border-bottom:1px solid var(--line);flex-shrink:0;
+  }
+  .brand{display:flex;align-items:baseline;gap:10px}
+  .brand h1{font-size:19px;font-weight:700;margin:0;letter-spacing:-.01em}
+  .brand .tag{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint)}
+  .userbar{display:flex;align-items:center;gap:14px;font-size:13px;color:var(--ink-dim)}
+
+  /* ---------- generic card / button ---------- */
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px}
+  button.primary{
+    padding:11px 18px;background:var(--teal);color:#06110f;border:none;
+    border-radius:8px;font-weight:600;cursor:pointer;font-size:14px;font-family:inherit;
+  }
+  button.primary:disabled{opacity:.5;cursor:not-allowed}
+  button.ghost{
+    background:transparent;border:1px solid var(--line2);color:var(--ink-dim);
+    padding:8px 16px;border-radius:8px;cursor:pointer;font-size:12.5px;font-family:inherit;
+  }
+  button.ghost:hover{color:var(--ink);border-color:#3a4e5e}
+  input,select,textarea{
+    width:100%;padding:11px 12px;margin-bottom:12px;background:var(--panel2);
+    border:1px solid var(--line2);border-radius:8px;color:var(--ink);font-size:14px;
+    font-family:inherit;display:block;
+  }
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--teal);outline-offset:1px;border-color:transparent}
+  .err{color:#f08c8c;background:#1c0f0f;border:1px solid #3a1a1a;padding:10px 12px;border-radius:9px;font-size:12.5px;margin-bottom:12px}
+  .warn{background:#1e1608;border:1px solid #3a2c10;color:#f0b866;padding:9px 12px;border-radius:9px;font-size:12.5px;margin-top:10px}
+  .disclaimer{font-size:11px;color:var(--ink-faint);text-align:center;padding:18px 0;line-height:1.5;flex-shrink:0}
+
+  /* ---------- auth screen ---------- */
+  .auth-center{flex:1;display:flex;align-items:center;justify-content:center}
+  .authcard{width:100%;max-width:380px;padding:32px}
+  .authcard h2{margin:0 0 20px;font-size:20px}
+  .switch{text-align:center;margin-top:16px;font-size:12.5px;color:var(--ink-dim)}
+  .switch a{color:var(--teal);cursor:pointer}
+
+  /* ---------- patient view ---------- */
+  .main-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;padding:24px 0 8px;align-items:start}
+  @media(max-width:900px){.main-grid{grid-template-columns:1fr}}
+
+  .viewer{padding:0;overflow:hidden}
+  .viewer .tabs{display:flex;gap:2px;padding:8px;border-bottom:1px solid var(--line);background:var(--panel2);flex-wrap:wrap}
+  .tab{
+    appearance:none;border:1px solid transparent;background:transparent;color:var(--ink-dim);
+    font-family:inherit;font-size:12.5px;font-weight:500;padding:7px 13px;border-radius:8px;cursor:pointer;
+  }
+  .tab[aria-selected="true"]{background:var(--bg);color:var(--teal);border-color:var(--line2)}
+  .tab:disabled{opacity:.35;cursor:not-allowed}
+  .canvas{
+    min-height:340px;display:flex;align-items:center;justify-content:center;padding:20px;
+    background:linear-gradient(#141c24 1px,transparent 1px) 0 0/26px 26px,
+      linear-gradient(90deg,#141c24 1px,transparent 1px) 0 0/26px 26px, var(--bg);
+  }
+  .canvas img{max-width:100%;max-height:420px;border-radius:6px;display:block}
+  .drop{
+    text-align:center;padding:44px 24px;border:1.5px dashed var(--line2);border-radius:12px;
+    cursor:pointer;width:100%;max-width:380px;transition:border-color .15s,background .15s;
+  }
+  .drop:hover{border-color:var(--teal);background:#0f1c22}
+  .drop h3{margin:0 0 6px;font-size:15px;font-weight:600}
+  .drop p{margin:0;font-size:12.5px;color:var(--ink-dim)}
+
+  .readout{display:flex;flex-direction:column}
+  .rd-section{padding:18px;border-bottom:1px solid var(--line)}
+  .rd-section:last-child{border-bottom:none}
+  .eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:10px}
+  .sev-row{display:flex;align-items:center;gap:10px}
+  .sev-chip{width:11px;height:11px;border-radius:3px;flex-shrink:0}
+  .sev-label{font-size:17px;font-weight:700}
+
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .stat{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+  .stat .k{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint)}
+  .stat .v{font-size:23px;font-weight:600;margin-top:5px;line-height:1}
+  .stat .v .u{font-size:12px;color:var(--ink-dim);font-weight:400}
+
+  .featrow{margin-bottom:10px}
+  .featrow:last-child{margin-bottom:0}
+  .featrow-top{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px}
+  .featrow-top .name{color:var(--ink-dim)}
+  .track{height:6px;background:#0c1418;border-radius:4px;overflow:hidden}
+  .fill{height:100%;border-radius:4px}
+
+  .placeholder{padding:60px 24px;text-align:center;color:var(--ink-faint);font-size:13px}
+
+  .hist-item{
+    display:grid;grid-template-columns:auto 1fr auto auto auto;gap:12px;align-items:center;
+    padding:11px 14px;background:var(--panel2);border-radius:8px;margin-bottom:8px;font-size:12.5px;
+  }
+  .hist-item .status{
+    font-size:10.5px;padding:3px 8px;border-radius:20px;background:var(--bg);
+    color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;
+  }
+
+  /* ---------- doctor view ---------- */
+  .doc-shell{max-width:520px;margin:32px auto;padding:26px}
+  .doc-shell h3{margin:0 0 4px}
+  label.check{display:flex;align-items:center;gap:9px;font-size:13.5px;margin:14px 0}
+  label.check input{width:16px;height:16px;flex-shrink:0;margin:0;accent-color:var(--teal)}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useEffect,useCallback} = React;
+const API = "";
+
+const FEATURE_MAX = {Redness:60,Necrosis:60,Pus:40,Swelling:60,Irregularity:100,Size:100};
+const FEATURE_TINT = {Redness:"#e05c5c",Necrosis:"#b0473b",Pus:"#e0b64a",Swelling:"#d98a4a",Irregularity:"#7aa0c0",Size:"#38c2b6"};
+
+function useAuth(){
+  const [token,setToken] = useState(localStorage.getItem("dfu_token"));
+  const [role,setRole] = useState(localStorage.getItem("dfu_role"));
+  const login = (t,r) => { localStorage.setItem("dfu_token",t); localStorage.setItem("dfu_role",r); setToken(t); setRole(r); };
+  const logout = () => { localStorage.removeItem("dfu_token"); localStorage.removeItem("dfu_role"); setToken(null); setRole(null); };
+  return {token,role,login,logout};
+}
+
+function AuthForm({onAuth}){
+  const [mode,setMode] = useState("login");
+  const [form,setForm] = useState({email:"",password:"",full_name:"",role:"patient"});
+  const [error,setError] = useState(null);
+  const [busy,setBusy] = useState(false);
+
+  const submit = async(e)=>{
+    e.preventDefault(); setError(null); setBusy(true);
+    try{
+      let res;
+      if(mode==="register"){
+        res = await fetch(API+"/auth/register",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(form)});
+      } else {
+        const body = new URLSearchParams({username:form.email,password:form.password});
+        res = await fetch(API+"/auth/login",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body});
+      }
+      const data = await res.json();
+      if(!res.ok) throw new Error(data.detail || "Failed");
+      onAuth(data.access_token, data.role);
+    }catch(err){ setError(err.message); }
+    finally{ setBusy(false); }
+  };
+
+  return (
+    <div className="auth-center">
+      <div className="card authcard">
+        <h2>{mode==="login"?"Log in":"Create account"}</h2>
+        {error && <div className="err">{error}</div>}
+        <form onSubmit={submit}>
+          {mode==="register" &&
+            <input placeholder="Full name" value={form.full_name}
+              onChange={e=>setForm({...form,full_name:e.target.value})} required/>}
+          <input type="email" placeholder="Email" value={form.email}
+            onChange={e=>setForm({...form,email:e.target.value})} required/>
+          <input type="password" placeholder="Password" value={form.password}
+            onChange={e=>setForm({...form,password:e.target.value})} required/>
+          {mode==="register" &&
+            <select value={form.role} onChange={e=>setForm({...form,role:e.target.value})}>
+              <option value="patient">Patient</option>
+              <option value="doctor">Doctor</option>
+            </select>}
+          <button className="primary" style={{width:"100%"}} disabled={busy}>
+            {busy?"...":mode==="login"?"Log in":"Register"}
+          </button>
+        </form>
+        <div className="switch">
+          {mode==="login"
+            ? <>No account? <a onClick={()=>setMode("register")}>Register</a></>
+            : <>Have an account? <a onClick={()=>setMode("login")}>Log in</a></>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Bar({name,value,max,tint}){
+  const pct = Math.min(100,(value/max)*100);
+  return (
+    <div className="featrow">
+      <div className="featrow-top"><span className="name">{name}</span><span className="mono">{value.toFixed(1)}%</span></div>
+      <div className="track"><div className="fill" style={{width:pct+"%",background:tint}}/></div>
+    </div>
+  );
+}
+
+function Readout({result,extra}){
+  if(!result) return <div className="card readout"><div className="placeholder">Upload a photo to see the analysis here.</div></div>;
+  const {infection,coverage_pct,features,severity_label,visit_id} = result;
+  return (
+    <div className="card readout">
+      {visit_id && (
+        <div className="rd-section" style={{background:"var(--panel2)"}}>
+          <div className="eyebrow">Visit ID — share this with your doctor</div>
+          <div style={{display:"flex",alignItems:"center",gap:10}}>
+            <span className="mono" style={{fontSize:20,fontWeight:700,color:"var(--teal)"}}>#{visit_id}</span>
+            <button className="ghost" onClick={()=>navigator.clipboard.writeText(String(visit_id))}>Copy</button>
+          </div>
+        </div>
+      )}
+      <div className="rd-section">
+        <div className="eyebrow">AI Visual Indicator (not a diagnosis)</div>
+        <div className="sev-row">
+          <span className="sev-chip" style={{background:infection.color}}/>
+          <span className="sev-label" style={{color:infection.color}}>{infection.level}</span>
+        </div>
+      </div>
+      <div className="rd-section">
+        <div className="stat-grid">
+          <div className="stat"><div className="k">Coverage</div>
+            <div className="v mono">{coverage_pct.toFixed(2)}<span className="u"> %</span></div></div>
+          <div className="stat"><div className="k">Infection score</div>
+            <div className="v mono" style={{color:infection.color}}>{infection.score.toFixed(0)}<span className="u"> /100</span></div></div>
+        </div>
+        <div style={{marginTop:12}} className="track"><div className="fill" style={{width:infection.score+"%",background:infection.color}}/></div>
+        {infection.override && <div className="warn">⚠ {infection.override}</div>}
+      </div>
+      {features && (
+        <div className="rd-section">
+          <div className="eyebrow">Wound features</div>
+          {Object.entries(features).map(([k,v])=>
+            <Bar key={k} name={k} value={v} max={FEATURE_MAX[k]||100} tint={FEATURE_TINT[k]||"#38c2b6"}/>
+          )}
+        </div>
+      )}
+      <div className="rd-section" style={{fontSize:11,color:"var(--ink-faint)"}}>
+        Size-based severity: <b className="mono" style={{color:"var(--ink)"}}>{severity_label}</b>
+      </div>
+      {extra && <div className="rd-section">{extra}</div>}
+    </div>
+  );
+}
+
+function PatientView({token,logout}){
+  const [preview,setPreview] = useState(null);
+  const [result,setResult] = useState(null);
+  const [history,setHistory] = useState([]);
+  const [loading,setLoading] = useState(false);
+  const [error,setError] = useState(null);
+  const [view,setView] = useState("overlay");
+
+  const loadHistory = useCallback(async()=>{
+    const res = await fetch(API+"/visits/history",{headers:{Authorization:"Bearer "+token}});
+    if(res.ok) setHistory(await res.json());
+  },[token]);
+  useEffect(()=>{ loadHistory(); },[loadHistory]);
+
+  const upload = async(file)=>{
+    setError(null); setResult(null); setLoading(true); setView("overlay");
+    setPreview(URL.createObjectURL(file));
+    try{
+      const fd = new FormData(); fd.append("file",file);
+      const res = await fetch(API+"/visits/upload",{method:"POST",headers:{Authorization:"Bearer "+token},body:fd});
+      const data = await res.json();
+      if(!res.ok) throw new Error(data.detail || "Upload failed");
+      setResult(data);
+      loadHistory();
+    }catch(e){ setError(e.message); }
+    finally{ setLoading(false); }
+  };
+
+  const tabs = [["overlay","Overlay"],["boundary","Boundary"],["mask","Mask"],["original","Original"]];
+  const shown = view==="original" ? preview : (result && result.images ? result.images[view] : preview);
+
+  return (
+    <div className="wrap">
+      <header className="top">
+        <div className="brand"><h1>DFU Clinical Platform</h1><span className="tag">Patient</span></div>
+        <div className="userbar">Patient account<button className="ghost" onClick={logout}>Log out</button></div>
+      </header>
+
+      <div className="main-grid">
+        <div className="card viewer">
+          <div className="tabs">
+            {tabs.map(([id,label])=>
+              <button key={id} className="tab" aria-selected={view===id}
+                disabled={!preview || (id!=="original" && !result)}
+                onClick={()=>setView(id)}>{label}</button>)}
+          </div>
+          <div className="canvas">
+            {!preview && (
+              <div className="drop" onClick={()=>document.getElementById("fileInp").click()}>
+                <h3>Upload a wound photo</h3>
+                <p>Click to browse · JPG or PNG</p>
+                <input id="fileInp" type="file" accept="image/*" hidden
+                  onChange={e=>e.target.files[0] && upload(e.target.files[0])}/>
+              </div>
+            )}
+            {preview && <img src={shown} alt={view}/>}
+          </div>
+          {preview && (
+            <div style={{padding:"12px 18px",borderTop:"1px solid var(--line)"}}>
+              <button className="ghost" onClick={()=>{setPreview(null);setResult(null);}}>New image</button>
+              {loading && <span className="mono" style={{marginLeft:12,color:"var(--teal)",fontSize:12}}>ANALYZING…</span>}
+            </div>
+          )}
+          {error && <div style={{padding:"0 18px 16px"}}><div className="err">{error}</div></div>}
+          {result && !result.image_quality?.ok && (
+            <div style={{padding:"0 18px 16px"}}>
+              {result.image_quality.warnings.map((w,i)=><div key={i} className="warn">⚠ {w}</div>)}
+            </div>
+          )}
+        </div>
+
+        <Readout result={result}/>
+      </div>
+
+      <div className="card" style={{margin:"4px 0 24px",padding:18}}>
+        <div className="eyebrow">Visit history</div>
+        {history.length===0 && <p style={{color:"var(--ink-faint)",fontSize:13,margin:0}}>No visits yet.</p>}
+        {history.map(v=>(
+          <div key={v.visit_id}>
+            <div className="hist-item">
+              <span className="mono">#{v.visit_id}</span>
+              <span className="mono">{new Date(v.created_at).toLocaleDateString()}</span>
+              <span className="mono">{v.coverage_pct?.toFixed(2)}%</span>
+              <span className="mono">{v.severity_label}</span>
+              <span className="status">{v.review_status}</span>
+            </div>
+            {v.doctor_notes && (
+              <div style={{background:"var(--panel2)",border:"1px solid var(--line)",borderRadius:8,
+                padding:"10px 14px",marginTop:-4,marginBottom:8,fontSize:12.5,color:"var(--ink-dim)"}}>
+                <span style={{color:"var(--teal)",fontWeight:600}}>Doctor's note: </span>
+                {v.doctor_notes}
+                {v.mask_confirmed===false &&
+                  <div style={{color:"#f0b866",marginTop:4}}>⚠ Doctor flagged the AI mask as incorrect.</div>}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      <p className="disclaimer">For educational and research use only. Not a medical diagnosis.</p>
+    </div>
+  );
+}
+
+function DoctorView({token,logout}){
+  useEffect(()=>{
+    document.body.classList.add("doctor-scope");
+    return ()=> document.body.classList.remove("doctor-scope");
+  },[]);
+  const [visitId,setVisitId] = useState("");
+  const [visit,setVisit] = useState(null);
+  const [notes,setNotes] = useState("");
+  const [confirmed,setConfirmed] = useState(true);
+  const [error,setError] = useState(null);
+  const [msg,setMsg] = useState(null);
+  const [view,setView] = useState("overlay");
+
+  const load = async()=>{
+    setError(null); setMsg(null); setVisit(null);
+    const res = await fetch(API+`/visits/${visitId}`,{headers:{Authorization:"Bearer "+token}});
+    const data = await res.json();
+    if(!res.ok){ setError(data.detail||"Not found"); return; }
+    setVisit(data); setNotes(data.doctor_notes||""); setView("overlay");
+  };
+
+  const submitReview = async()=>{
+    const res = await fetch(API+`/visits/${visitId}/review`,{method:"POST",
+      headers:{"Content-Type":"application/json",Authorization:"Bearer "+token},
+      body:JSON.stringify({doctor_notes:notes,mask_confirmed:confirmed,review_status:"reviewed"})});
+    const data = await res.json();
+    if(!res.ok){ setError(data.detail||"Failed"); return; }
+    setVisit(data); setMsg("Review saved.");
+  };
+
+  const tabs = [["overlay","Overlay"],["boundary","Boundary"],["mask","Mask"]];
+
+  const reviewForm = (
+    <div>
+      <div className="eyebrow">Clinician review</div>
+      <textarea placeholder="Doctor notes" value={notes} onChange={e=>setNotes(e.target.value)}
+        style={{minHeight:80}}/>
+      <label className="check">
+        <input type="checkbox" checked={confirmed} onChange={e=>setConfirmed(e.target.checked)}/>
+        AI mask looks correct
+      </label>
+      <button className="primary" style={{width:"100%"}} onClick={submitReview}>Save review</button>
+      {msg && <p style={{color:"var(--teal)",fontSize:13,marginTop:10}}>{msg}</p>}
+    </div>
+  );
+
+  return (
+    <div className="wrap">
+      <header className="top">
+        <div className="brand"><h1>DFU Clinical Platform</h1><span className="tag">Doctor</span></div>
+        <div className="userbar">Doctor account<button className="ghost" onClick={logout}>Log out</button></div>
+      </header>
+
+      <div className="card" style={{margin:"24px 0 16px",padding:18}}>
+        <div className="eyebrow">Open a visit for review</div>
+        <div style={{display:"flex",gap:10}}>
+          <input placeholder="Visit ID (e.g. 384712)" value={visitId}
+            onChange={e=>setVisitId(e.target.value)} style={{marginBottom:0}}/>
+          <button className="primary" onClick={load}>Load</button>
+        </div>
+        {error && <div className="err" style={{marginTop:12}}>{error}</div>}
+      </div>
+
+      {visit && (
+        <div className="main-grid">
+          <div className="card viewer">
+            <div className="tabs">
+              {tabs.map(([id,label])=>
+                <button key={id} className="tab" aria-selected={view===id}
+                  onClick={()=>setView(id)}>{label}</button>)}
+            </div>
+            <div className="canvas">
+              {visit.images && <img src={visit.images[view]} alt={view}/>}
+            </div>
+            {!visit.image_quality?.ok && (
+              <div style={{padding:"0 18px 16px"}}>
+                {visit.image_quality.warnings.map((w,i)=><div key={i} className="warn">⚠ {w}</div>)}
+              </div>
+            )}
+          </div>
+          <Readout result={visit} extra={reviewForm}/>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function App(){
+  const {token,role,login,logout} = useAuth();
+  if(!token) return <div className="wrap"><AuthForm onAuth={login}/></div>;
+  return role==="doctor" ? <DoctorView token={token} logout={logout}/> : <PatientView token={token} logout={logout}/>;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
