@@ -152,9 +152,16 @@ const FEATURE_TINT = {Redness:"#e05c5c",Necrosis:"#b0473b",Pus:"#e0b64a",Swellin
 function useAuth(){
   const [token,setToken] = useState(localStorage.getItem("dfu_token"));
   const [role,setRole] = useState(localStorage.getItem("dfu_role"));
-  const login = (t,r) => { localStorage.setItem("dfu_token",t); localStorage.setItem("dfu_role",r); setToken(t); setRole(r); };
-  const logout = () => { localStorage.removeItem("dfu_token"); localStorage.removeItem("dfu_role"); setToken(null); setRole(null); };
-  return {token,role,login,logout};
+  const [name,setName] = useState(localStorage.getItem("dfu_name"));
+  const login = (t,r,n) => {
+    localStorage.setItem("dfu_token",t); localStorage.setItem("dfu_role",r); localStorage.setItem("dfu_name",n||"");
+    setToken(t); setRole(r); setName(n);
+  };
+  const logout = () => {
+    localStorage.removeItem("dfu_token"); localStorage.removeItem("dfu_role"); localStorage.removeItem("dfu_name");
+    setToken(null); setRole(null); setName(null);
+  };
+  return {token,role,name,login,logout};
 }
 
 function AuthForm({onAuth}){
@@ -175,7 +182,7 @@ function AuthForm({onAuth}){
       }
       const data = await res.json();
       if(!res.ok) throw new Error(data.detail || "Failed");
-      onAuth(data.access_token, data.role);
+      onAuth(data.access_token, data.role, data.full_name);
     }catch(err){ setError(err.message); }
     finally{ setBusy(false); }
   };
@@ -269,7 +276,7 @@ function Readout({result,extra}){
   );
 }
 
-function PatientView({token,logout}){
+function PatientView({token,name,logout}){
   const [preview,setPreview] = useState(null);
   const [result,setResult] = useState(null);
   const [history,setHistory] = useState([]);
@@ -304,7 +311,7 @@ function PatientView({token,logout}){
     <div className="wrap">
       <header className="top">
         <div className="brand"><h1>DFU Clinical Platform</h1><span className="tag">Patient</span></div>
-        <div className="userbar">Patient account<button className="ghost" onClick={logout}>Log out</button></div>
+        <div className="userbar">{name || "Patient"}<button className="ghost" onClick={logout}>Log out</button></div>
       </header>
 
       <div className="main-grid">
@@ -344,7 +351,10 @@ function PatientView({token,logout}){
       </div>
 
       <div className="card" style={{margin:"4px 0 24px",padding:18}}>
-        <div className="eyebrow">Visit history</div>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+          <div className="eyebrow" style={{marginBottom:0}}>Visit history</div>
+          <button className="ghost" onClick={loadHistory}>Refresh</button>
+        </div>
         {history.length===0 && <p style={{color:"var(--ink-faint)",fontSize:13,margin:0}}>No visits yet.</p>}
         {history.map(v=>(
           <div key={v.visit_id}>
@@ -373,7 +383,7 @@ function PatientView({token,logout}){
   );
 }
 
-function DoctorView({token,logout}){
+function DoctorView({token,name,logout}){
   useEffect(()=>{
     document.body.classList.add("doctor-scope");
     return ()=> document.body.classList.remove("doctor-scope");
@@ -423,7 +433,7 @@ function DoctorView({token,logout}){
     <div className="wrap">
       <header className="top">
         <div className="brand"><h1>DFU Clinical Platform</h1><span className="tag">Doctor</span></div>
-        <div className="userbar">Doctor account<button className="ghost" onClick={logout}>Log out</button></div>
+        <div className="userbar">{name || "Doctor"}<button className="ghost" onClick={logout}>Log out</button></div>
       </header>
 
       <div className="card" style={{margin:"24px 0 16px",padding:18}}>
@@ -461,9 +471,9 @@ function DoctorView({token,logout}){
 }
 
 function App(){
-  const {token,role,login,logout} = useAuth();
+  const {token,role,name,login,logout} = useAuth();
   if(!token) return <div className="wrap"><AuthForm onAuth={login}/></div>;
-  return role==="doctor" ? <DoctorView token={token} logout={logout}/> : <PatientView token={token} logout={logout}/>;
+  return role==="doctor" ? <DoctorView token={token} name={name} logout={logout}/> : <PatientView token={token} name={name} logout={logout}/>;
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
