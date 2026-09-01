@@ -14,6 +14,14 @@ class RegisterRequest(BaseModel):
     password: str
     full_name: str
     role: str  # "patient" | "doctor"
+    doctor_id: int | None = None  # required when role == "patient"
+
+
+@router.get("/doctors")
+def list_doctors(db: Session = Depends(get_db)):
+    """Public list for the patient signup dropdown — no auth needed."""
+    doctors = db.query(Doctor).join(User).all()
+    return [{"doctor_id": d.id, "full_name": d.user.full_name, "specialty": d.specialty} for d in doctors]
 
 
 @router.post("/register")
@@ -22,6 +30,8 @@ def register(req: RegisterRequest, db: Session = Depends(get_db)):
         raise HTTPException(400, "role must be 'patient' or 'doctor'")
     if db.query(User).filter(User.email == req.email).first():
         raise HTTPException(400, "Email already registered")
+    if req.role == "patient" and req.doctor_id is None:
+        raise HTTPException(400, "Please choose a doctor")
 
     user = User(email=req.email, hashed_password=hash_password(req.password),
                 role=req.role, full_name=req.full_name)
@@ -30,7 +40,9 @@ def register(req: RegisterRequest, db: Session = Depends(get_db)):
     db.refresh(user)
 
     if req.role == "patient":
-        db.add(Patient(user_id=user.id))
+        if not db.query(Doctor).filter(Doctor.id == req.doctor_id).first():
+            raise HTTPException(400, "Selected doctor not found")
+        db.add(Patient(user_id=user.id, assigned_doctor_id=req.doctor_id))
     else:
         db.add(Doctor(user_id=user.id))
     db.commit()

@@ -150,15 +150,17 @@ const FEATURE_MAX = {Redness:60,Necrosis:60,Pus:40,Swelling:60,Irregularity:100,
 const FEATURE_TINT = {Redness:"#e05c5c",Necrosis:"#b0473b",Pus:"#e0b64a",Swelling:"#d98a4a",Irregularity:"#7aa0c0",Size:"#38c2b6"};
 
 function useAuth(){
-  const [token,setToken] = useState(localStorage.getItem("dfu_token"));
-  const [role,setRole] = useState(localStorage.getItem("dfu_role"));
-  const [name,setName] = useState(localStorage.getItem("dfu_name"));
+  // sessionStorage (not localStorage) -> each browser TAB keeps its own session,
+  // so a patient tab and a doctor tab open side-by-side never overwrite each other.
+  const [token,setToken] = useState(sessionStorage.getItem("dfu_token"));
+  const [role,setRole] = useState(sessionStorage.getItem("dfu_role"));
+  const [name,setName] = useState(sessionStorage.getItem("dfu_name"));
   const login = (t,r,n) => {
-    localStorage.setItem("dfu_token",t); localStorage.setItem("dfu_role",r); localStorage.setItem("dfu_name",n||"");
+    sessionStorage.setItem("dfu_token",t); sessionStorage.setItem("dfu_role",r); sessionStorage.setItem("dfu_name",n||"");
     setToken(t); setRole(r); setName(n);
   };
   const logout = () => {
-    localStorage.removeItem("dfu_token"); localStorage.removeItem("dfu_role"); localStorage.removeItem("dfu_name");
+    sessionStorage.removeItem("dfu_token"); sessionStorage.removeItem("dfu_role"); sessionStorage.removeItem("dfu_name");
     setToken(null); setRole(null); setName(null);
   };
   return {token,role,name,login,logout};
@@ -166,16 +168,24 @@ function useAuth(){
 
 function AuthForm({onAuth}){
   const [mode,setMode] = useState("login");
-  const [form,setForm] = useState({email:"",password:"",full_name:"",role:"patient"});
+  const [form,setForm] = useState({email:"",password:"",full_name:"",role:"patient",doctor_id:""});
   const [error,setError] = useState(null);
   const [busy,setBusy] = useState(false);
+  const [doctors,setDoctors] = useState([]);
+
+  useEffect(()=>{
+    if(mode==="register" && form.role==="patient"){
+      fetch(API+"/auth/doctors").then(r=>r.json()).then(setDoctors).catch(()=>setDoctors([]));
+    }
+  },[mode,form.role]);
 
   const submit = async(e)=>{
     e.preventDefault(); setError(null); setBusy(true);
     try{
       let res;
       if(mode==="register"){
-        res = await fetch(API+"/auth/register",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(form)});
+        const body = {...form, doctor_id: form.role==="patient" ? Number(form.doctor_id) : null};
+        res = await fetch(API+"/auth/register",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
       } else {
         const body = new URLSearchParams({username:form.email,password:form.password});
         res = await fetch(API+"/auth/login",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body});
@@ -201,9 +211,16 @@ function AuthForm({onAuth}){
           <input type="password" placeholder="Password" value={form.password}
             onChange={e=>setForm({...form,password:e.target.value})} required/>
           {mode==="register" &&
-            <select value={form.role} onChange={e=>setForm({...form,role:e.target.value})}>
+            <select value={form.role} onChange={e=>setForm({...form,role:e.target.value,doctor_id:""})}>
               <option value="patient">Patient</option>
               <option value="doctor">Doctor</option>
+            </select>}
+          {mode==="register" && form.role==="patient" &&
+            <select value={form.doctor_id} onChange={e=>setForm({...form,doctor_id:e.target.value})} required>
+              <option value="" disabled>Choose your doctor…</option>
+              {doctors.map(d=>
+                <option key={d.doctor_id} value={d.doctor_id}>Dr. {d.full_name} — {d.specialty}</option>)}
+              {doctors.length===0 && <option value="" disabled>No doctors registered yet</option>}
             </select>}
           <button className="primary" style={{width:"100%"}} disabled={busy}>
             {busy?"...":mode==="login"?"Log in":"Register"}
@@ -229,12 +246,12 @@ function Bar({name,value,max,tint}){
   );
 }
 
-function Readout({result,extra}){
+function Readout({result,extra,showVisitId=true}){
   if(!result) return <div className="card readout"><div className="placeholder">Upload a photo to see the analysis here.</div></div>;
   const {infection,coverage_pct,features,severity_label,visit_id} = result;
   return (
     <div className="card readout">
-      {visit_id && (
+      {visit_id && showVisitId && (
         <div className="rd-section" style={{background:"var(--panel2)"}}>
           <div className="eyebrow">Visit ID — share this with your doctor</div>
           <div style={{display:"flex",alignItems:"center",gap:10}}>
@@ -278,6 +295,8 @@ function Readout({result,extra}){
 
 function PatientView({token,name,logout}){
   const [preview,setPreview] = useState(null);
+  const [pendingFile,setPendingFile] = useState(null);
+  const [patientNote,setPatientNote] = useState("");
   const [result,setResult] = useState(null);
   const [history,setHistory] = useState([]);
   const [loading,setLoading] = useState(false);
@@ -290,15 +309,20 @@ function PatientView({token,name,logout}){
   },[token]);
   useEffect(()=>{ loadHistory(); },[loadHistory]);
 
-  const upload = async(file)=>{
-    setError(null); setResult(null); setLoading(true); setView("overlay");
+  const pickFile = (file)=>{
+    setResult(null); setError(null); setPendingFile(file);
     setPreview(URL.createObjectURL(file));
+  };
+
+  const submitUpload = async()=>{
+    if(!pendingFile) return;
+    setError(null); setLoading(true); setView("overlay");
     try{
-      const fd = new FormData(); fd.append("file",file);
+      const fd = new FormData(); fd.append("file",pendingFile); fd.append("notes",patientNote);
       const res = await fetch(API+"/visits/upload",{method:"POST",headers:{Authorization:"Bearer "+token},body:fd});
       const data = await res.json();
       if(!res.ok) throw new Error(data.detail || "Upload failed");
-      setResult(data);
+      setResult(data); setPendingFile(null); setPatientNote("");
       loadHistory();
     }catch(e){ setError(e.message); }
     finally{ setLoading(false); }
@@ -328,14 +352,23 @@ function PatientView({token,name,logout}){
                 <h3>Upload a wound photo</h3>
                 <p>Click to browse · JPG or PNG</p>
                 <input id="fileInp" type="file" accept="image/*" hidden
-                  onChange={e=>e.target.files[0] && upload(e.target.files[0])}/>
+                  onChange={e=>e.target.files[0] && pickFile(e.target.files[0])}/>
               </div>
             )}
             {preview && <img src={shown} alt={view}/>}
           </div>
           {preview && (
-            <div style={{padding:"12px 18px",borderTop:"1px solid var(--line)"}}>
-              <button className="ghost" onClick={()=>{setPreview(null);setResult(null);}}>New image</button>
+            <div style={{padding:"14px 18px",borderTop:"1px solid var(--line)"}}>
+              {!result && !loading && (
+                <div style={{marginBottom:12}}>
+                  <div className="eyebrow">Tell your doctor anything relevant (optional)</div>
+                  <textarea placeholder="e.g. it hurts near the edge, started 3 days ago…"
+                    value={patientNote} onChange={e=>setPatientNote(e.target.value)}
+                    style={{minHeight:60,marginBottom:10}}/>
+                  <button className="primary" onClick={submitUpload}>Analyze photo</button>
+                </div>
+              )}
+              <button className="ghost" onClick={()=>{setPreview(null);setResult(null);setPendingFile(null);setPatientNote("");}}>New image</button>
               {loading && <span className="mono" style={{marginLeft:12,color:"var(--teal)",fontSize:12}}>ANALYZING…</span>}
             </div>
           )}
@@ -395,10 +428,18 @@ function DoctorView({token,name,logout}){
   const [error,setError] = useState(null);
   const [msg,setMsg] = useState(null);
   const [view,setView] = useState("overlay");
+  const [patients,setPatients] = useState([]);
 
-  const load = async()=>{
-    setError(null); setMsg(null); setVisit(null);
-    const res = await fetch(API+`/visits/${visitId}`,{headers:{Authorization:"Bearer "+token}});
+  const loadPatients = useCallback(async()=>{
+    const res = await fetch(API+"/visits/doctor/my-patients",{headers:{Authorization:"Bearer "+token}});
+    if(res.ok) setPatients(await res.json());
+  },[token]);
+  useEffect(()=>{ loadPatients(); },[loadPatients]);
+
+  const load = async(id)=>{
+    const useId = id || visitId;
+    setError(null); setMsg(null); setVisit(null); setVisitId(useId);
+    const res = await fetch(API+`/visits/${useId}`,{headers:{Authorization:"Bearer "+token}});
     const data = await res.json();
     if(!res.ok){ setError(data.detail||"Not found"); return; }
     setVisit(data); setNotes(data.doctor_notes||""); setView("overlay");
@@ -411,6 +452,7 @@ function DoctorView({token,name,logout}){
     const data = await res.json();
     if(!res.ok){ setError(data.detail||"Failed"); return; }
     setVisit(data); setMsg("Review saved.");
+    loadPatients();
   };
 
   const tabs = [["overlay","Overlay"],["boundary","Boundary"],["mask","Mask"]];
@@ -437,11 +479,29 @@ function DoctorView({token,name,logout}){
       </header>
 
       <div className="card" style={{margin:"24px 0 16px",padding:18}}>
-        <div className="eyebrow">Open a visit for review</div>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+          <div className="eyebrow" style={{marginBottom:0}}>My patients</div>
+          <button className="ghost" onClick={loadPatients}>Refresh</button>
+        </div>
+        {patients.length===0 && <p style={{color:"var(--ink-faint)",fontSize:13,margin:0}}>
+          No visits from your patients yet.</p>}
+        {patients.map(v=>(
+          <div key={v.visit_id} className="hist-item" style={{cursor:"pointer"}} onClick={()=>load(v.visit_id)}>
+            <span className="mono">#{v.visit_id}</span>
+            <span>{v.patient_name}</span>
+            <span className="mono">{v.coverage_pct?.toFixed(2)}%</span>
+            <span className="mono">{v.severity_label}</span>
+            <span className="status">{v.review_status}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="card" style={{margin:"0 0 16px",padding:18}}>
+        <div className="eyebrow">Or look up any visit by ID</div>
         <div style={{display:"flex",gap:10}}>
           <input placeholder="Visit ID (e.g. 384712)" value={visitId}
             onChange={e=>setVisitId(e.target.value)} style={{marginBottom:0}}/>
-          <button className="primary" onClick={load}>Load</button>
+          <button className="primary" onClick={()=>load()}>Load</button>
         </div>
         {error && <div className="err" style={{marginTop:12}}>{error}</div>}
       </div>
@@ -449,6 +509,12 @@ function DoctorView({token,name,logout}){
       {visit && (
         <div className="main-grid">
           <div className="card viewer">
+            {visit.patient_notes && (
+              <div style={{padding:"14px 18px",borderBottom:"1px solid var(--line)",background:"var(--panel2)"}}>
+                <div className="eyebrow" style={{marginBottom:6}}>Patient reported</div>
+                <div style={{fontSize:13.5,color:"var(--ink)"}}>{visit.patient_notes}</div>
+              </div>
+            )}
             <div className="tabs">
               {tabs.map(([id,label])=>
                 <button key={id} className="tab" aria-selected={view===id}
@@ -463,7 +529,7 @@ function DoctorView({token,name,logout}){
               </div>
             )}
           </div>
-          <Readout result={visit} extra={reviewForm}/>
+          <Readout result={visit} extra={reviewForm} showVisitId={false}/>
         </div>
       )}
     </div>

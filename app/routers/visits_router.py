@@ -1,12 +1,12 @@
 import os, io, json, secrets
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from PIL import Image
 import numpy as np
 
-from ..models import get_db, User, Patient, Visit, VisitImage
+from ..models import get_db, User, Patient, Doctor, Visit, VisitImage
 from ..auth import get_current_user, require_role
 from .. import inference
 
@@ -26,6 +26,7 @@ def _generate_public_id(db: Session) -> str:
 
 @router.post("/upload")
 async def upload_visit(file: UploadFile = File(...),
+                       notes: str = Form(""),
                        user: User = Depends(require_role("patient")),
                        db: Session = Depends(get_db)):
     patient = db.query(Patient).filter(Patient.user_id == user.id).first()
@@ -58,6 +59,7 @@ async def upload_visit(file: UploadFile = File(...),
         features_json=json.dumps(result["features"]),
         image_quality_ok=result["image_quality"]["ok"],
         image_quality_warnings=json.dumps(result["image_quality"]["warnings"]),
+        patient_notes=notes.strip() or None,
         review_status="pending",
     )
     db.add(visit)
@@ -69,7 +71,8 @@ async def upload_visit(file: UploadFile = File(...),
                       boundary_b64=imgs["boundary"], mask_b64=imgs["mask"]))
     db.commit()
 
-    return {"visit_id": visit.public_id, "created_at": visit.created_at, **result}
+    return {"visit_id": visit.public_id, "created_at": visit.created_at,
+            "patient_notes": visit.patient_notes, **result}
 
 
 @router.get("/history")
@@ -79,6 +82,24 @@ def visit_history(user: User = Depends(require_role("patient")), db: Session = D
         raise HTTPException(404, "Patient profile not found")
     visits = db.query(Visit).filter(Visit.patient_id == patient.id).order_by(Visit.created_at).all()
     return [_visit_summary(v) for v in visits]
+
+
+@router.get("/doctor/my-patients")
+def my_patients(user: User = Depends(require_role("doctor")), db: Session = Depends(get_db)):
+    """All visits from patients assigned to the logged-in doctor, newest first."""
+    doctor = db.query(Doctor).filter(Doctor.user_id == user.id).first()
+    if not doctor:
+        raise HTTPException(404, "Doctor profile not found")
+    patients = db.query(Patient).filter(Patient.assigned_doctor_id == doctor.id).all()
+    patient_ids = [p.id for p in patients]
+    visits = (db.query(Visit).filter(Visit.patient_id.in_(patient_ids))
+              .order_by(Visit.created_at.desc()).all())
+    out = []
+    for v in visits:
+        row = _visit_summary(v)
+        row["patient_name"] = v.patient.user.full_name
+        out.append(row)
+    return out
 
 
 @router.get("/{visit_id}")
@@ -122,6 +143,7 @@ def _visit_detail(v: Visit) -> dict:
         "created_at": v.created_at,
         "review_status": v.review_status,
         "doctor_notes": v.doctor_notes,
+        "patient_notes": v.patient_notes,
         "mask_confirmed": v.mask_confirmed,
         "coverage_pct": v.coverage_pct,
         "severity_label": v.severity_label,
@@ -145,5 +167,6 @@ def _visit_summary(v: Visit) -> dict:
         "image_quality_warnings": json.loads(v.image_quality_warnings or "[]"),
         "review_status": v.review_status,
         "doctor_notes": v.doctor_notes,
+        "patient_notes": v.patient_notes,
         "mask_confirmed": v.mask_confirmed,
     }

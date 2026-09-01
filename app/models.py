@@ -68,6 +68,7 @@ class Visit(Base):
     severity_label = Column(String, nullable=True)
     image_quality_ok = Column(Boolean, default=True)
     image_quality_warnings = Column(Text, nullable=True)  # JSON string
+    patient_notes = Column(Text, nullable=True)  # what the patient told the doctor at upload time
 
     # full heuristic result, stored so doctor view never needs to recompute
     features_json = Column(Text, nullable=True)      # JSON: {Redness, Necrosis, Pus, ...}
