@@ -1,53 +1,103 @@
-# DFU Analysis Console
+# DFU Analysis Platform
 
-Self-contained web app for diabetic foot ulcer analysis. One FastAPI service serves
-both the ML inference API **and** the React frontend
+AI-assisted diabetic foot ulcer (DFU) monitoring app built for the E9 internship
+problem statement: severity assessment of diabetic foot ulcers from photographs.
 
-**Pipeline (ported verbatim from the trained notebooks):**
-segmentation (U-Net++ / EfficientNet-B4, FP16 ONNX) → wound feature extraction →
-infection severity → Wagner grade.
+The project started as a single-file segmentation demo and has since grown into
+a small clinical workflow: patients upload wound photos and get an AI reading,
+their assigned doctor reviews the same case with the full image and heuristic
+breakdown, and everything is tied to a proper account system instead of a bare
+upload form.
 
-## Setup
+## What it does
 
-1. Put your model file **`dfu_model_fp16.onnx`** in this folder (next to `main.py`).
-2. Install and run:
+- Patients register, pick a doctor from the list of registered clinicians, and
+  upload photos of a wound.
+- Each photo is segmented by a U-Net++ (EfficientNet-B4 encoder) model trained
+  on DFUC2022 plus a second wound-segmentation dataset, combined as an ensemble
+  so a wound only gets missed if both models miss it.
+- The app reports ulcer coverage, a colour/texture-based infection indicator
+  (redness, necrosis, pus, swelling, irregularity), and a size-based severity
+  label. Wagner grading was deliberately left out — it depends on wound depth
+  and exposed bone/tendon, which cannot be judged from a 2D photo, so including
+  it would have been more misleading than useful.
+- Every visit is saved with a short numeric ID the patient can reference, and
+  automatically shows up on their assigned doctor's dashboard — no manual
+  code-sharing required.
+- Doctors see the same overlay/mask/boundary images and feature breakdown the
+  patient saw, can leave notes, confirm or reject the AI-predicted mask, and
+  mark a visit as reviewed.
+- Patients can add a short note about their symptoms at upload time (e.g. pain
+  location, how long it's been there), which is saved against that visit and
+  shown to the reviewing doctor.
+- Low-quality photos (too dark, too blurry, too small) are flagged before the
+  model even runs, so a bad photo doesn't quietly produce a meaningless result.
 
-```bash
+## Architecture
+
+- **Backend**: FastAPI, SQLAlchemy models, JWT-based auth with patient/doctor
+  roles. SQLite by default — swapping to Postgres later is a one-line change
+  to `DATABASE_URL` since the code is fully ORM-based.
+- **Frontend**: a single React file (loaded via CDN, no build step) served
+  directly by FastAPI as a static file.
+- **Model**: ONNX Runtime for inference (a PyTorch `.pth` checkpoint also
+  works, auto-detected from the file extension). Segmentation output feeds a
+  set of hand-written colour/texture heuristics for the infection indicator —
+  this part is explicitly a heuristic, not a trained classifier, since no
+  infection-labelled dataset was available at the time (DFUC2021/Part-B are
+  access-gated). Segmentation itself is a real trained model with measured
+  Dice/IoU on held-out data.
+- Images (overlay, boundary, mask) and the full feature breakdown are stored
+  per visit so a doctor's review loads instantly, without re-running the model.
+
+## Project layout
+
+```
+app/
+  main.py              FastAPI app, mounts routers and static files
+  models.py             SQLAlchemy models (users, patients, doctors, visits, images)
+  auth.py                Password hashing, JWT issuing/validation, role checks
+  inference.py           Segmentation + infection heuristic pipeline
+  routers/
+    auth_router.py       Register / login / doctor list
+    visits_router.py      Upload, history, doctor review, my-patients
+static/
+  index.html            Frontend (patient and doctor views)
+requirements.txt
+```
+
+## Running it
+
+1. Place your model file in the project root, next to `requirements.txt`:
+   `dfu_model.onnx` + `dfu_model.onnx.data`, or a `best_model.pth` checkpoint.
+2. Install dependencies and run:
+
+```
 pip install -r requirements.txt
-uvicorn main:app --port 8000
+uvicorn app.main:app --port 8010
 ```
 
-3. Open **http://localhost:8010** — upload a foot image, get results.
+3. Open `http://localhost:8010`. Register a doctor account first (so patients
+   have someone to pick from), then register a patient account.
 
-That's it. Deliverables 1 (segmentation + grading), 2 (infection severity), and
-4 (mobile-friendly inference) are all live in this single app.
+Set `DFU_MODEL` as an environment variable if your model file has a different
+name, e.g. `best_model.pth`.
 
-## What you see
+## Known limitations
 
-- **Viewer** with view-mode tabs: Overlay (red fill), Boundary (yellow contour),
-  Mask (binary), Original.
-- **Readout**: infection severity, Wagner grade, ulcer coverage %, infection score,
-  and a per-feature breakdown (redness, necrosis, pus, swelling, irregularity, size).
+- The infection indicator is a rule-based estimate built from wound colour and
+  texture, not a model trained on infection-labelled data. It's presented in
+  the UI as an "AI visual indicator," not a diagnosis, and should be read that
+  way.
+- No clinical progression charting yet — visit history exists per patient, but
+  trend/healing analysis over time isn't built.
+- This is a student project, not a certified medical device. Nothing it
+  outputs should be used for an actual clinical decision without a qualified
+  clinician in the loop.
 
-## API (for reference / Postman)
+## Background
 
-- `GET /health` → `{status, model}`
-- `POST /analyze` (multipart `file`) → JSON with `coverage_pct`, `infection`,
-  `wagner`, `features`, `inference_ms`, and base64 `images.{overlay,boundary,mask}`.
-
-```bash
-curl -F "file=@foot.jpg" http://localhost:8000/analyze
-```
-
-## Config (env vars)
-
-- `DFU_MODEL` — path to the ONNX model (default `dfu_model_fp16.onnx`).
-
-## Notes
-
-- Threshold is `0.45` and the infection weights / Wagner thresholds match the notebooks
-  exactly. Change `THRESHOLD` / `MIN_AREA` at the top of `main.py` if needed.
-- The frontend loads React + fonts from CDNs, so first load needs internet.
-- CORS is open (`*`) for local dev — restrict `allow_origins` before deploying.
-- Deploy split (when you add a DB later): frontend+API on Railway/Render (the 42 MB
-  model bundles fine there); avoid Vercel serverless for the model.
+Originally built for the DFUC2022 dataset as a segmentation-only tool, then
+extended with an infection heuristic, a second segmentation model trained on
+additional wound data (combined via ensemble for better small-wound recall),
+and finally restructured into the patient/doctor platform described above.
