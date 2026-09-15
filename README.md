@@ -1,7 +1,6 @@
 # DFU Analysis Platform
 
-AI-assisted diabetic foot ulcer (DFU) monitoring app built for the E9 internship
-problem statement: severity assessment of diabetic foot ulcers from photographs.
+AI-assisted diabetic foot ulcer (DFU) monitoring app built for the severity assessment of diabetic foot ulcers from photographs.
 
 The project started as a single-file segmentation demo and has since grown into
 a small clinical workflow: patients upload wound photos and get an AI reading,
