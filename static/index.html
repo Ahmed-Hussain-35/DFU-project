@@ -15,8 +15,6 @@
     --line:#212d38;--line2:#2b3a47;--ink:#e8eef4;--ink-dim:#8a99a8;--ink-faint:#5b6b7a;
     --teal:#38c2b6;--teal-dim:#1c5a55;
   }
-  /* Doctor mode: full warm palette swap (not just accent color) so the
-     page reads visibly different at a glance, applied via a body class. */
   body.doctor-scope{
     --teal:#e0a458; --teal-dim:#6b4a1c;
     --bg:#181109; --bg2:#1d140a; --panel:#241a0c; --panel2:#2c2010;
@@ -35,7 +33,6 @@
   .mono{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
   #root{min-height:100vh;display:flex;flex-direction:column}
 
-  /* ---------- layout shell ---------- */
   .wrap{max-width:1200px;width:100%;margin:0 auto;padding:0 24px;flex:1;display:flex;flex-direction:column}
   header.top{
     display:flex;align-items:center;justify-content:space-between;
@@ -46,7 +43,6 @@
   .brand .tag{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint)}
   .userbar{display:flex;align-items:center;gap:14px;font-size:13px;color:var(--ink-dim)}
 
-  /* ---------- generic card / button ---------- */
   .card{background:var(--panel);border:1px solid var(--line);border-radius:14px}
   button.primary{
     padding:11px 18px;background:var(--teal);color:#06110f;border:none;
@@ -68,14 +64,12 @@
   .warn{background:#1e1608;border:1px solid #3a2c10;color:#f0b866;padding:9px 12px;border-radius:9px;font-size:12.5px;margin-top:10px}
   .disclaimer{font-size:11px;color:var(--ink-faint);text-align:center;padding:18px 0;line-height:1.5;flex-shrink:0}
 
-  /* ---------- auth screen ---------- */
   .auth-center{flex:1;display:flex;align-items:center;justify-content:center}
   .authcard{width:100%;max-width:380px;padding:32px}
   .authcard h2{margin:0 0 20px;font-size:20px}
   .switch{text-align:center;margin-top:16px;font-size:12.5px;color:var(--ink-dim)}
   .switch a{color:var(--teal);cursor:pointer}
 
-  /* ---------- patient view ---------- */
   .main-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;padding:24px 0 8px;align-items:start}
   @media(max-width:900px){.main-grid{grid-template-columns:1fr}}
 
@@ -133,11 +127,25 @@
     color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;
   }
 
-  /* ---------- doctor view ---------- */
   .doc-shell{max-width:520px;margin:32px auto;padding:26px}
   .doc-shell h3{margin:0 0 4px}
   label.check{display:flex;align-items:center;gap:9px;font-size:13.5px;margin:14px 0}
   label.check input{width:16px;height:16px;flex-shrink:0;margin:0;accent-color:var(--teal)}
+  /* animations */
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes popIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+  @keyframes revealIn{0%{opacity:0;transform:translateY(-10px) scale(.97)}100%{opacity:1;transform:translateY(0) scale(1)}}
+  .reveal-in{animation:revealIn .32s cubic-bezier(.22,.85,.3,1)}
+  button{transition:transform .1s ease, opacity .1s ease}
+  button:active{transform:scale(.96)}
+  button:disabled{opacity:.6;cursor:not-allowed}
+  .spin{display:inline-block;animation:spin .7s linear infinite}
+  .fade-in{animation:fadeIn .28s ease}
+  .pop-in{animation:popIn .2s ease}
+  .card{animation:fadeIn .25s ease}
+  .hist-item{transition:background .15s ease}
+  .hist-item:hover{background:var(--line)}
 </style>
 </head>
 <body>
@@ -151,24 +159,28 @@ const FEATURE_TINT = {Redness:"#e05c5c",Necrosis:"#b0473b",Pus:"#e0b64a",Swellin
 
 function useAuth(){
   // sessionStorage (not localStorage) -> each browser TAB keeps its own session,
-  // so a patient tab and a doctor tab open side-by-side never overwrite each other.
+  // so patient in one tab + doctor in another never overwrite each other.
   const [token,setToken] = useState(sessionStorage.getItem("dfu_token"));
   const [role,setRole] = useState(sessionStorage.getItem("dfu_role"));
   const [name,setName] = useState(sessionStorage.getItem("dfu_name"));
-  const login = (t,r,n) => {
+  const [isVerified,setIsVerified] = useState(sessionStorage.getItem("dfu_verified")==="true");
+  const login = (t,r,n,v) => {
     sessionStorage.setItem("dfu_token",t); sessionStorage.setItem("dfu_role",r); sessionStorage.setItem("dfu_name",n||"");
-    setToken(t); setRole(r); setName(n);
+    sessionStorage.setItem("dfu_verified", v?"true":"false");
+    setToken(t); setRole(r); setName(n); setIsVerified(!!v);
   };
   const logout = () => {
-    sessionStorage.removeItem("dfu_token"); sessionStorage.removeItem("dfu_role"); sessionStorage.removeItem("dfu_name");
-    setToken(null); setRole(null); setName(null);
+    sessionStorage.removeItem("dfu_token"); sessionStorage.removeItem("dfu_role");
+    sessionStorage.removeItem("dfu_name"); sessionStorage.removeItem("dfu_verified");
+    setToken(null); setRole(null); setName(null); setIsVerified(false);
   };
-  return {token,role,name,login,logout};
+  return {token,role,name,isVerified,login,logout};
 }
 
 function AuthForm({onAuth}){
   const [mode,setMode] = useState("login");
-  const [form,setForm] = useState({email:"",password:"",full_name:"",role:"patient",doctor_id:""});
+  const [form,setForm] = useState({email:"",password:"",full_name:"",role:"patient",doctor_id:"",license_number:"",medical_council:""});
+  const [licenseFile,setLicenseFile] = useState(null);
   const [error,setError] = useState(null);
   const [busy,setBusy] = useState(false);
   const [doctors,setDoctors] = useState([]);
@@ -192,7 +204,16 @@ function AuthForm({onAuth}){
       }
       const data = await res.json();
       if(!res.ok) throw new Error(data.detail || "Failed");
-      onAuth(data.access_token, data.role, data.full_name);
+
+      // doctor registration + a license file selected -> upload it right away,
+      // using the fresh token, before switching into the app
+      if(mode==="register" && form.role==="doctor" && licenseFile){
+        const fd = new FormData(); fd.append("file",licenseFile);
+        await fetch(API+"/auth/doctor/upload-license",{method:"POST",
+          headers:{Authorization:"Bearer "+data.access_token}, body:fd}).catch(()=>{});
+      }
+
+      onAuth(data.access_token, data.role, data.full_name, data.is_verified);
     }catch(err){ setError(err.message); }
     finally{ setBusy(false); }
   };
@@ -220,8 +241,26 @@ function AuthForm({onAuth}){
               <option value="" disabled>Choose your doctor…</option>
               {doctors.map(d=>
                 <option key={d.doctor_id} value={d.doctor_id}>Dr. {d.full_name} — {d.specialty}</option>)}
-              {doctors.length===0 && <option value="" disabled>No doctors registered yet</option>}
+              {doctors.length===0 && <option value="" disabled>No verified doctors yet</option>}
             </select>}
+          {mode==="register" && form.role==="doctor" &&
+            <input placeholder="Medical license number" value={form.license_number}
+              onChange={e=>setForm({...form,license_number:e.target.value})}/>}
+          {mode==="register" && form.role==="doctor" &&
+            <input placeholder="State Medical Council (e.g. Telangana State Medical Council)"
+              value={form.medical_council}
+              onChange={e=>setForm({...form,medical_council:e.target.value})}/>}
+          {mode==="register" && form.role==="doctor" &&
+            <div style={{marginBottom:12}}>
+              <label style={{fontSize:12,color:"var(--ink-dim)",display:"block",marginBottom:6}}>
+                License certificate (image or PDF, optional but recommended)</label>
+              <input type="file" accept="image/*,.pdf"
+                onChange={e=>setLicenseFile(e.target.files[0]||null)}/>
+            </div>}
+          {mode==="register" && form.role==="doctor" &&
+            <p style={{fontSize:11.5,color:"var(--ink-faint)",marginTop:-6,marginBottom:12}}>
+              Your account needs admin approval before patients can select you. None of this is
+              checked against a real medical registry automatically — an admin reviews it manually.</p>}
           <button className="primary" style={{width:"100%"}} disabled={busy}>
             {busy?"...":mode==="login"?"Log in":"Register"}
           </button>
@@ -293,6 +332,74 @@ function Readout({result,extra,showVisitId=true}){
   );
 }
 
+function ChatPanel({fetchUrl,token,myUserLabel,otherUserId}){
+  const [messages,setMessages] = useState([]);
+  const [text,setText] = useState("");
+  const [error,setError] = useState(null);
+  const [connected,setConnected] = useState(false);
+  const boxRef = React.useRef(null);
+  const wsRef = React.useRef(null);
+
+  useEffect(()=>{
+    fetch(API+fetchUrl,{headers:{Authorization:"Bearer "+token}})
+      .then(r=>r.ok?r.json():[]).then(setMessages).catch(()=>{});
+  },[fetchUrl,token]);
+
+  useEffect(()=>{
+    if(!otherUserId) return;
+    const proto = location.protocol==="https:" ? "wss:" : "ws:";
+    const ws = new WebSocket(`${proto}//${location.host}/ws/chat?token=${encodeURIComponent(token)}`);
+    wsRef.current = ws;
+    ws.onopen = ()=>setConnected(true);
+    ws.onclose = ()=>setConnected(false);
+    ws.onerror = ()=>setError("Chat connection lost — try refreshing.");
+    ws.onmessage = (e)=>{
+      const data = JSON.parse(e.data);
+      setMessages(prev=>[...prev,data]);
+    };
+    return ()=>ws.close();
+  },[otherUserId,token]);
+
+  useEffect(()=>{
+    if(boxRef.current) boxRef.current.scrollTop = boxRef.current.scrollHeight;
+  },[messages]);
+
+  const send = ()=>{
+    if(!text.trim()) return;
+    if(!wsRef.current || wsRef.current.readyState!==1){ setError("Not connected yet — wait a moment."); return; }
+    wsRef.current.send(JSON.stringify({to_user_id:otherUserId, content:text}));
+    setText("");
+  };
+
+  return (
+    <div className="card" style={{padding:0,display:"flex",flexDirection:"column",height:340}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 18px 0"}}>
+        <div className="eyebrow" style={{marginBottom:0}}>Messages</div>
+        <span className="mono" style={{fontSize:10,color:connected?"var(--teal)":"var(--ink-faint)"}}>
+          {connected?"● live":"○ connecting…"}</span>
+      </div>
+      <div ref={boxRef} style={{flex:1,overflowY:"auto",padding:"10px 18px",display:"flex",flexDirection:"column",gap:8}}>
+        {messages.length===0 && <p style={{color:"var(--ink-faint)",fontSize:12.5}}>No messages yet.</p>}
+        {messages.map(m=>(
+          <div key={m.id} className="pop-in" style={{alignSelf:m.sender_name===myUserLabel?"flex-end":"flex-start",maxWidth:"78%"}}>
+            <div style={{fontSize:10.5,color:"var(--ink-faint)",marginBottom:2}}>{m.sender_name}</div>
+            <div style={{background:m.sender_name===myUserLabel?"var(--teal-dim)":"var(--panel2)",
+              border:"1px solid var(--line)",borderRadius:10,padding:"7px 11px",fontSize:13}}>{m.content}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{display:"flex",gap:8,padding:14,borderTop:"1px solid var(--line)"}}>
+        <input placeholder="Type a message…" value={text}
+          onChange={e=>setText(e.target.value)}
+          onKeyDown={e=>e.key==="Enter" && send()}
+          style={{marginBottom:0}}/>
+        <button className="primary" onClick={send}>Send</button>
+      </div>
+      {error && <div style={{padding:"0 14px 10px"}}><div className="err">{error}</div></div>}
+    </div>
+  );
+}
+
 function PatientView({token,name,logout}){
   const [preview,setPreview] = useState(null);
   const [pendingFile,setPendingFile] = useState(null);
@@ -302,10 +409,14 @@ function PatientView({token,name,logout}){
   const [loading,setLoading] = useState(false);
   const [error,setError] = useState(null);
   const [view,setView] = useState("overlay");
+  const [historyLoading,setHistoryLoading] = useState(false);
 
   const loadHistory = useCallback(async()=>{
-    const res = await fetch(API+"/visits/history",{headers:{Authorization:"Bearer "+token}});
-    if(res.ok) setHistory(await res.json());
+    setHistoryLoading(true);
+    try{
+      const res = await fetch(API+"/visits/history",{headers:{Authorization:"Bearer "+token}});
+      if(res.ok) setHistory(await res.json());
+    } finally { setHistoryLoading(false); }
   },[token]);
   useEffect(()=>{ loadHistory(); },[loadHistory]);
 
@@ -326,6 +437,47 @@ function PatientView({token,name,logout}){
       loadHistory();
     }catch(e){ setError(e.message); }
     finally{ setLoading(false); }
+  };
+
+  const [doctorInfo,setDoctorInfo] = useState(null);
+  const [doctorList,setDoctorList] = useState([]);
+  const [changingDoctor,setChangingDoctor] = useState(false);
+  const [newDoctorId,setNewDoctorId] = useState("");
+  const [doctorMsg,setDoctorMsg] = useState(null);
+
+  const loadDoctorInfo = useCallback(async()=>{
+    const res = await fetch(API+"/messages/patient/contact",{headers:{Authorization:"Bearer "+token}});
+    if(res.ok) setDoctorInfo(await res.json());
+  },[token]);
+  useEffect(()=>{ loadDoctorInfo(); },[loadDoctorInfo]);
+
+  const startChangeDoctor = ()=>{
+    setChangingDoctor(true); setDoctorMsg(null);
+    fetch(API+"/auth/doctors").then(r=>r.json()).then(setDoctorList).catch(()=>setDoctorList([]));
+  };
+
+  const saveDoctorChange = async()=>{
+    if(!newDoctorId) return;
+    const res = await fetch(API+"/auth/patient/change-doctor",{method:"POST",
+      headers:{"Content-Type":"application/json",Authorization:"Bearer "+token},
+      body:JSON.stringify({doctor_id:Number(newDoctorId)})});
+    const data = await res.json();
+    if(!res.ok){ setDoctorMsg(data.detail||"Failed"); return; }
+    setDoctorMsg("Doctor updated."); setChangingDoctor(false);
+    loadDoctorInfo();
+  };
+
+  const doctorUserId = doctorInfo ? doctorInfo.user_id : null;
+
+  const [pastVisit,setPastVisit] = useState(null);
+  const [pastView,setPastView] = useState("overlay");
+  const [pastError,setPastError] = useState(null);
+  const openPast = async(id)=>{
+    setPastError(null); setPastVisit(null); setPastView("overlay");
+    const res = await fetch(API+`/visits/${id}`,{headers:{Authorization:"Bearer "+token}});
+    const data = await res.json();
+    if(!res.ok){ setPastError(data.detail||"Could not load that visit"); return; }
+    setPastVisit(data);
   };
 
   const tabs = [["overlay","Overlay"],["boundary","Boundary"],["mask","Mask"],["original","Original"]];
@@ -362,8 +514,9 @@ function PatientView({token,name,logout}){
               {!result && !loading && (
                 <div style={{marginBottom:12}}>
                   <div className="eyebrow">Tell your doctor anything relevant (optional)</div>
-                  <textarea placeholder="e.g. it hurts near the edge, started 3 days ago…"
+                  <textarea placeholder="e.g. it hurts near the edge, started 3 days ago… (Enter to analyze, Shift+Enter for a new line)"
                     value={patientNote} onChange={e=>setPatientNote(e.target.value)}
+                    onKeyDown={e=>{ if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); submitUpload(); } }}
                     style={{minHeight:60,marginBottom:10}}/>
                   <button className="primary" onClick={submitUpload}>Analyze photo</button>
                 </div>
@@ -383,15 +536,74 @@ function PatientView({token,name,logout}){
         <Readout result={result}/>
       </div>
 
+      <div style={{marginBottom:20}}>
+        <ChatPanel fetchUrl="/messages/patient/thread"
+          token={token} myUserLabel={name} otherUserId={doctorUserId}/>
+      </div>
+
+      {pastError && <div style={{marginBottom:16}}><div className="err">{pastError}</div></div>}
+
+      {pastVisit && (
+        <div className="main-grid reveal-in" style={{marginBottom:20,paddingTop:0}}>
+          <div className="card viewer">
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",
+              padding:"12px 18px",borderBottom:"1px solid var(--line)"}}>
+              <span className="eyebrow" style={{marginBottom:0}}>Visit #{pastVisit.visit_id} — {new Date(pastVisit.created_at).toLocaleDateString()}</span>
+              <button className="ghost" onClick={()=>setPastVisit(null)}>Close</button>
+            </div>
+            <div className="tabs">
+              {[["overlay","Overlay"],["boundary","Boundary"],["mask","Mask"]].map(([id,label])=>
+                <button key={id} className="tab" aria-selected={pastView===id}
+                  onClick={()=>setPastView(id)}>{label}</button>)}
+            </div>
+            <div className="canvas">
+              {pastVisit.images && <img src={pastVisit.images[pastView]} alt={pastView}/>}
+            </div>
+            {pastVisit.doctor_notes && (
+              <div style={{padding:"14px 18px",borderTop:"1px solid var(--line)",background:"var(--panel2)"}}>
+                <div className="eyebrow" style={{marginBottom:6}}>Doctor's note</div>
+                <div style={{fontSize:13.5}}>{pastVisit.doctor_notes}</div>
+              </div>
+            )}
+          </div>
+          <Readout result={pastVisit} showVisitId={false}/>
+        </div>
+      )}
+
+      <div className="card" style={{margin:"4px 0 20px",padding:18}}>
+        <div className="eyebrow">Your doctor</div>
+        {!changingDoctor ? (
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <span>{doctorInfo ? `Dr. ${doctorInfo.full_name}` : "Loading…"}</span>
+            <button className="ghost" onClick={startChangeDoctor}>Change</button>
+          </div>
+        ) : (
+          <div>
+            <select value={newDoctorId} onChange={e=>setNewDoctorId(e.target.value)}>
+              <option value="" disabled>Choose a new doctor…</option>
+              {doctorList.map(d=>
+                <option key={d.doctor_id} value={d.doctor_id}>Dr. {d.full_name} — {d.specialty}</option>)}
+            </select>
+            <div style={{display:"flex",gap:10}}>
+              <button className="primary" onClick={saveDoctorChange}>Save</button>
+              <button className="ghost" onClick={()=>setChangingDoctor(false)}>Cancel</button>
+            </div>
+          </div>
+        )}
+        {doctorMsg && <p style={{fontSize:12.5,color:"var(--teal)",marginTop:8}}>{doctorMsg}</p>}
+      </div>
+
       <div className="card" style={{margin:"4px 0 24px",padding:18}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
           <div className="eyebrow" style={{marginBottom:0}}>Visit history</div>
-          <button className="ghost" onClick={loadHistory}>Refresh</button>
+          <button className="ghost" onClick={loadHistory} disabled={historyLoading}>
+            {historyLoading ? <span className="spin">↻</span> : "Refresh"}
+          </button>
         </div>
         {history.length===0 && <p style={{color:"var(--ink-faint)",fontSize:13,margin:0}}>No visits yet.</p>}
         {history.map(v=>(
           <div key={v.visit_id}>
-            <div className="hist-item">
+            <div className="hist-item" style={{cursor:"pointer"}} onClick={()=>openPast(v.visit_id)}>
               <span className="mono">#{v.visit_id}</span>
               <span className="mono">{new Date(v.created_at).toLocaleDateString()}</span>
               <span className="mono">{v.coverage_pct?.toFixed(2)}%</span>
@@ -416,7 +628,7 @@ function PatientView({token,name,logout}){
   );
 }
 
-function DoctorView({token,name,logout}){
+function DoctorView({token,name,isVerified,logout}){
   useEffect(()=>{
     document.body.classList.add("doctor-scope");
     return ()=> document.body.classList.remove("doctor-scope");
@@ -429,10 +641,20 @@ function DoctorView({token,name,logout}){
   const [msg,setMsg] = useState(null);
   const [view,setView] = useState("overlay");
   const [patients,setPatients] = useState([]);
+  const [patientsLoading,setPatientsLoading] = useState(false);
+
+  const [liveVerified,setLiveVerified] = useState(isVerified);
+  useEffect(()=>{
+    fetch(API+"/auth/doctor/status",{headers:{Authorization:"Bearer "+token}})
+      .then(r=>r.ok?r.json():null).then(d=>d && setLiveVerified(d.is_verified)).catch(()=>{});
+  },[token]);
 
   const loadPatients = useCallback(async()=>{
-    const res = await fetch(API+"/visits/doctor/my-patients",{headers:{Authorization:"Bearer "+token}});
-    if(res.ok) setPatients(await res.json());
+    setPatientsLoading(true);
+    try{
+      const res = await fetch(API+"/visits/doctor/my-patients",{headers:{Authorization:"Bearer "+token}});
+      if(res.ok) setPatients(await res.json());
+    } finally { setPatientsLoading(false); }
   },[token]);
   useEffect(()=>{ loadPatients(); },[loadPatients]);
 
@@ -445,14 +667,18 @@ function DoctorView({token,name,logout}){
     setVisit(data); setNotes(data.doctor_notes||""); setView("overlay");
   };
 
+  const [reviewSaving,setReviewSaving] = useState(false);
   const submitReview = async()=>{
-    const res = await fetch(API+`/visits/${visitId}/review`,{method:"POST",
-      headers:{"Content-Type":"application/json",Authorization:"Bearer "+token},
-      body:JSON.stringify({doctor_notes:notes,mask_confirmed:confirmed,review_status:"reviewed"})});
-    const data = await res.json();
-    if(!res.ok){ setError(data.detail||"Failed"); return; }
-    setVisit(data); setMsg("Review saved.");
-    loadPatients();
+    setReviewSaving(true);
+    try{
+      const res = await fetch(API+`/visits/${visitId}/review`,{method:"POST",
+        headers:{"Content-Type":"application/json",Authorization:"Bearer "+token},
+        body:JSON.stringify({doctor_notes:notes,mask_confirmed:confirmed,review_status:"reviewed"})});
+      const data = await res.json();
+      if(!res.ok){ setError(data.detail||"Failed"); return; }
+      setVisit(data); setMsg("Review saved.");
+      loadPatients();
+    } finally { setReviewSaving(false); }
   };
 
   const tabs = [["overlay","Overlay"],["boundary","Boundary"],["mask","Mask"]];
@@ -460,14 +686,24 @@ function DoctorView({token,name,logout}){
   const reviewForm = (
     <div>
       <div className="eyebrow">Clinician review</div>
-      <textarea placeholder="Doctor notes" value={notes} onChange={e=>setNotes(e.target.value)}
+      <textarea placeholder="Doctor notes (Enter to save, Shift+Enter for a new line)"
+        value={notes} onChange={e=>setNotes(e.target.value)}
+        onKeyDown={e=>{ if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); submitReview(); } }}
         style={{minHeight:80}}/>
       <label className="check">
         <input type="checkbox" checked={confirmed} onChange={e=>setConfirmed(e.target.checked)}/>
         AI mask looks correct
       </label>
-      <button className="primary" style={{width:"100%"}} onClick={submitReview}>Save review</button>
-      {msg && <p style={{color:"var(--teal)",fontSize:13,marginTop:10}}>{msg}</p>}
+      <button className="primary" style={{width:"100%"}} onClick={submitReview} disabled={reviewSaving}>
+        {reviewSaving ? <span className="spin">↻</span> : "Save review"}
+      </button>
+      {msg && <p className="fade-in" style={{color:"var(--teal)",fontSize:13,marginTop:10}}>{msg}</p>}
+      {visit && visit.patient_id && (
+        <div style={{marginTop:16}}>
+          <ChatPanel fetchUrl={`/messages/doctor/thread/${visit.patient_id}`}
+            token={token} myUserLabel={name} otherUserId={visit.patient_user_id}/>
+        </div>
+      )}
     </div>
   );
 
@@ -478,10 +714,19 @@ function DoctorView({token,name,logout}){
         <div className="userbar">{name || "Doctor"}<button className="ghost" onClick={logout}>Log out</button></div>
       </header>
 
+      {!liveVerified && (
+        <div className="warn" style={{margin:"18px 0"}}>
+          ⚠ Your account is pending admin approval. Patients cannot select you as their
+          doctor yet, but you can still use everything else here in the meantime.
+        </div>
+      )}
+
       <div className="card" style={{margin:"24px 0 16px",padding:18}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
           <div className="eyebrow" style={{marginBottom:0}}>My patients</div>
-          <button className="ghost" onClick={loadPatients}>Refresh</button>
+          <button className="ghost" onClick={loadPatients} disabled={patientsLoading}>
+            {patientsLoading ? <span className="spin">↻</span> : "Refresh"}
+          </button>
         </div>
         {patients.length===0 && <p style={{color:"var(--ink-faint)",fontSize:13,margin:0}}>
           No visits from your patients yet.</p>}
@@ -536,10 +781,133 @@ function DoctorView({token,name,logout}){
   );
 }
 
+function AdminPanel(){
+  const [key,setKey] = useState("");
+  const [showKey,setShowKey] = useState(false);
+  const [unlocked,setUnlocked] = useState(false);
+  const [pending,setPending] = useState([]);
+  const [error,setError] = useState(null);
+  const [msg,setMsg] = useState(null);
+  const [unlocking,setUnlocking] = useState(false);
+  const [approvingId,setApprovingId] = useState(null);
+
+  const viewDocument = async(doctorId)=>{
+    const res = await fetch(API+`/admin/doctor-license/${doctorId}`,{headers:{"X-Admin-Key":key}});
+    if(!res.ok){ setMsg("No document uploaded for this doctor."); return; }
+    const blob = await res.blob();
+    window.open(URL.createObjectURL(blob), "_blank");
+  };
+
+  const openRegistry = ()=>{
+    // The real, official NMC Indian Medical Register — search manually by
+    // name / registration number / State Medical Council. Not auto-filled;
+    // this is an honest "go check yourself" link, not automated verification.
+    window.open("https://www.nmc.org.in/information-desk/indian-medical-register/", "_blank");
+  };
+
+  const load = async(k)=>{
+    setError(null); setUnlocking(true);
+    try{
+      const res = await fetch(API+"/admin/pending-doctors",{headers:{"X-Admin-Key":k}});
+      if(!res.ok){ setError("Wrong admin key, or server rejected the request."); return; }
+      setPending(await res.json()); setUnlocked(true);
+    } finally { setUnlocking(false); }
+  };
+
+  const approve = async(id)=>{
+    setMsg(null); setApprovingId(id);
+    try{
+      const res = await fetch(API+`/admin/approve-doctor/${id}`,{method:"POST",headers:{"X-Admin-Key":key}});
+      if(res.ok){ setMsg("Approved."); await load(key); }
+    } finally { setApprovingId(null); }
+  };
+
+  if(!unlocked){
+    return (
+      <div className="auth-center">
+        <div className="card authcard">
+          <h2>Admin — verify doctors</h2>
+          <div style={{position:"relative"}}>
+            <input placeholder="Admin key" type={showKey?"text":"password"} value={key}
+              onChange={e=>setKey(e.target.value)} style={{paddingRight:44}}/>
+            <button type="button" onClick={()=>setShowKey(s=>!s)}
+              aria-label={showKey?"Hide key":"Show key"}
+              style={{position:"absolute",right:6,top:6,width:32,height:32,padding:0,
+                background:"transparent",border:"none",cursor:"pointer",color:"var(--ink-faint)",
+                display:"flex",alignItems:"center",justifyContent:"center"}}>
+              {showKey ? (
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a18.5 18.5 0 015.06-5.94M9.9 4.24A10.94 10.94 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+              ) : (
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              )}
+            </button>
+          </div>
+          <button className="primary" style={{width:"100%"}} onClick={()=>load(key)} disabled={unlocking}>
+            {unlocking ? <span className="spin">↻</span> : "Unlock"}
+          </button>
+          {error && <div className="err fade-in" style={{marginTop:12}}>{error}</div>}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{padding:"24px 0"}}>
+      <div className="card" style={{padding:18}}>
+        <div className="eyebrow">Pending doctor verifications</div>
+        {pending.length===0 && <p style={{color:"var(--ink-faint)",fontSize:13}}>Nothing pending.</p>}
+        {pending.map(d=>(
+          <div key={d.doctor_id} className="fade-in" style={{background:"var(--panel2)",
+            border:"1px solid var(--line)",borderRadius:10,padding:"14px 16px",marginBottom:10}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:8}}>
+              <span style={{fontWeight:600}}>Dr. {d.full_name}</span>
+              <span className="mono" style={{fontSize:11,color:"var(--ink-faint)"}}>{d.email}</span>
+            </div>
+            <div style={{fontSize:12.5,color:"var(--ink-dim)",marginBottom:4}}>
+              License #: <span className="mono">{d.license_number || "not given"}</span></div>
+            <div style={{fontSize:12.5,color:"var(--ink-dim)",marginBottom:12}}>
+              Council: {d.medical_council || "not given"} · Specialty: {d.specialty}</div>
+            <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+              <button className="ghost" onClick={()=>viewDocument(d.doctor_id)} disabled={!d.has_license_doc}>
+                {d.has_license_doc ? "View license document" : "No document uploaded"}
+              </button>
+              <button className="ghost" onClick={openRegistry}>Open NMC registry ↗</button>
+              <button className="primary" onClick={()=>approve(d.doctor_id)} disabled={approvingId===d.doctor_id}>
+                {approvingId===d.doctor_id ? <span className="spin">↻</span> : "Approve"}
+              </button>
+            </div>
+          </div>
+        ))}
+        {msg && <p style={{color:"var(--teal)",fontSize:13,marginTop:10}}>{msg}</p>}
+      </div>
+    </div>
+  );
+}
+
 function App(){
-  const {token,role,name,login,logout} = useAuth();
+  // useAuth called unconditionally (Rules of Hooks) even though the admin
+  // page doesn't need it — branching happens only in the return below.
+  const {token,role,name,isVerified,login,logout} = useAuth();
+  const isAdminUrl = new URLSearchParams(location.search).get("admin")==="1";
+
+  useEffect(()=>{
+    if(isAdminUrl) document.title = "Admin Page";
+    else if(!token) document.title = "DFU Clinical Platform";
+    else if(role==="doctor") document.title = "Doctor Portal";
+    else document.title = "Patient Portal";
+  },[isAdminUrl,token,role]);
+
+  if(isAdminUrl) return <div className="wrap"><AdminPanel/></div>;
   if(!token) return <div className="wrap"><AuthForm onAuth={login}/></div>;
-  return role==="doctor" ? <DoctorView token={token} name={name} logout={logout}/> : <PatientView token={token} name={name} logout={logout}/>;
+  return role==="doctor"
+    ? <DoctorView token={token} name={name} isVerified={isVerified} logout={logout}/>
+    : <PatientView token={token} name={name} logout={logout}/>;
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(<App/>);

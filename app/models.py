@@ -32,6 +32,10 @@ class Doctor(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
     specialty = Column(String, default="General")
+    license_number = Column(String, nullable=True)
+    medical_council = Column(String, nullable=True)     # e.g. "Telangana State Medical Council"
+    license_doc_path = Column(String, nullable=True)     # uploaded certificate, admin-reviewed
+    is_verified = Column(Boolean, default=False)
 
     user = relationship("User", back_populates="doctor_profile")
     patients = relationship("Patient", back_populates="assigned_doctor")
@@ -58,27 +62,23 @@ class Visit(Base):
     patient_id = Column(Integer, ForeignKey("patients.id"), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    # image storage (path on disk; swap for S3/blob later without schema change)
     image_path = Column(String, nullable=False)
 
-    # AI results
     coverage_pct = Column(Float, nullable=True)
     infection_score = Column(Float, nullable=True)
     infection_level = Column(String, nullable=True)
     severity_label = Column(String, nullable=True)
     image_quality_ok = Column(Boolean, default=True)
-    image_quality_warnings = Column(Text, nullable=True)  # JSON string
-    patient_notes = Column(Text, nullable=True)  # what the patient told the doctor at upload time
+    image_quality_warnings = Column(Text, nullable=True)
+    patient_notes = Column(Text, nullable=True)
 
-    # full heuristic result, stored so doctor view never needs to recompute
-    features_json = Column(Text, nullable=True)      # JSON: {Redness, Necrosis, Pus, ...}
+    features_json = Column(Text, nullable=True)
     infection_color = Column(String, nullable=True)
     infection_override = Column(Text, nullable=True)
 
-    # clinician review
-    review_status = Column(String, default="pending")  # pending | reviewed | flagged
+    review_status = Column(String, default="pending")
     doctor_notes = Column(Text, nullable=True)
-    mask_confirmed = Column(Boolean, nullable=True)  # doctor confirms/rejects AI mask
+    mask_confirmed = Column(Boolean, nullable=True)
     reviewed_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     reviewed_at = Column(DateTime, nullable=True)
 
@@ -87,8 +87,6 @@ class Visit(Base):
 
 
 class VisitImage(Base):
-    """Stored separately from Visit (linked by visit_id) so the lightweight
-    visit rows/history queries never have to pull large base64 blobs."""
     __tablename__ = "visit_images"
     id = Column(Integer, primary_key=True, index=True)
     visit_id = Column(Integer, ForeignKey("visits.id"), unique=True, nullable=False)
@@ -97,6 +95,15 @@ class VisitImage(Base):
     mask_b64 = Column(Text, nullable=False)
 
     visit = relationship("Visit", back_populates="images")
+
+
+class Message(Base):
+    __tablename__ = "messages"
+    id = Column(Integer, primary_key=True, index=True)
+    sender_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    receiver_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    content = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 
 def init_db():

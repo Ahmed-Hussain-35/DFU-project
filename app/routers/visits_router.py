@@ -108,6 +108,19 @@ def get_visit(visit_id: str, user: User = Depends(get_current_user), db: Session
     visit = db.query(Visit).filter(Visit.public_id == visit_id).first()
     if not visit:
         raise HTTPException(404, "Visit not found")
+
+    # ownership check — patients can only open their own visits, doctors only
+    # their assigned patients' visits (the ID is hard to guess, but that's
+    # not the same as actually enforcing access control server-side)
+    if user.role == "patient":
+        patient = db.query(Patient).filter(Patient.user_id == user.id).first()
+        if not patient or visit.patient_id != patient.id:
+            raise HTTPException(403, "Not your visit")
+    elif user.role == "doctor":
+        doctor = db.query(Doctor).filter(Doctor.user_id == user.id).first()
+        if not doctor or visit.patient.assigned_doctor_id != doctor.id:
+            raise HTTPException(403, "Not your assigned patient's visit")
+
     return _visit_detail(visit)
 
 
@@ -141,6 +154,9 @@ def _visit_detail(v: Visit) -> dict:
     return {
         "visit_id": v.public_id,
         "created_at": v.created_at,
+        "patient_id": v.patient_id,
+        "patient_user_id": v.patient.user_id,
+        "patient_name": v.patient.user.full_name,
         "review_status": v.review_status,
         "doctor_notes": v.doctor_notes,
         "patient_notes": v.patient_notes,

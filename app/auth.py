@@ -61,3 +61,17 @@ def require_role(*roles: str):
             raise HTTPException(status_code=403, detail=f"Requires role: {roles}")
         return user
     return checker
+
+
+def get_user_from_token_sync(token: str, db: Session):
+    """For WebSocket auth — the normal get_current_user depends on FastAPI's
+    request-scoped Depends() flow, which WebSocket handshakes don't use the
+    same way. Token is passed as a query param instead."""
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = payload.get("sub")
+        if user_id is None:
+            return None
+    except JWTError:
+        return None
+    return db.query(User).filter(User.id == int(user_id)).first()

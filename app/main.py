@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 import os
 
 from .models import init_db
-from .routers import auth_router, visits_router
+from .routers import auth_router, visits_router, messages_router, ws_router, admin_router
 
 app = FastAPI(title="DFU Clinical Platform")
 
@@ -14,6 +14,9 @@ app.add_middleware(CORSMiddleware, allow_origins=ALLOWED_ORIGINS,
 
 app.include_router(auth_router.router)
 app.include_router(visits_router.router)
+app.include_router(messages_router.router)
+app.include_router(ws_router.router)
+app.include_router(admin_router.router)
 
 
 @app.on_event("startup")
