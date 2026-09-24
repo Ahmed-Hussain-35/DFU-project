@@ -19,7 +19,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
-    role = Column(String, nullable=False)  # "patient" | "doctor" | "admin"
+    role = Column(String, nullable=False)
     full_name = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
@@ -33,8 +33,8 @@ class Doctor(Base):
     user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
     specialty = Column(String, default="General")
     license_number = Column(String, nullable=True)
-    medical_council = Column(String, nullable=True)     # e.g. "Telangana State Medical Council"
-    license_doc_path = Column(String, nullable=True)     # uploaded certificate, admin-reviewed
+    medical_council = Column(String, nullable=True)
+    license_doc_path = Column(String, nullable=True)
     is_verified = Column(Boolean, default=False)
 
     user = relationship("User", back_populates="doctor_profile")
@@ -55,7 +55,7 @@ class Patient(Base):
 
 
 class Visit(Base):
-    """One wound-photo upload + AI analysis + (optional) clinician review."""
+    """One wound-photo upload + AI analysis (Phase 1 and/or Phase 2) + optional clinician review."""
     __tablename__ = "visits"
     id = Column(Integer, primary_key=True, index=True)
     public_id = Column(String, unique=True, index=True, nullable=False)
@@ -63,7 +63,9 @@ class Visit(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     image_path = Column(String, nullable=False)
+    phases_run = Column(String, default="phase1")   # "phase1" | "phase2" | "phase1,phase2"
 
+    # Phase 1 (rule-based) — original columns
     coverage_pct = Column(Float, nullable=True)
     infection_score = Column(Float, nullable=True)
     infection_level = Column(String, nullable=True)
@@ -71,11 +73,25 @@ class Visit(Base):
     image_quality_ok = Column(Boolean, default=True)
     image_quality_warnings = Column(Text, nullable=True)
     patient_notes = Column(Text, nullable=True)
-
     features_json = Column(Text, nullable=True)
     infection_color = Column(String, nullable=True)
     infection_override = Column(Text, nullable=True)
 
+    # Phase 2 (ML pipeline) — new columns
+    p2_coverage_pct = Column(Float, nullable=True)
+    p2_infection_score = Column(Float, nullable=True)
+    p2_infection_level = Column(String, nullable=True)
+    p2_infection_color = Column(String, nullable=True)
+    p2_infection_override = Column(Text, nullable=True)
+    p2_severity_label = Column(String, nullable=True)
+    p2_features_json = Column(Text, nullable=True)
+    p2_wagner_grade = Column(Integer, nullable=True)
+    p2_wagner_confidence = Column(Float, nullable=True)
+    p2_wagner_title = Column(String, nullable=True)
+    p2_wagner_description = Column(Text, nullable=True)
+    p2_wagner_color = Column(String, nullable=True)
+
+    # Review
     review_status = Column(String, default="pending")
     doctor_notes = Column(Text, nullable=True)
     mask_confirmed = Column(Boolean, nullable=True)
@@ -90,9 +106,17 @@ class VisitImage(Base):
     __tablename__ = "visit_images"
     id = Column(Integer, primary_key=True, index=True)
     visit_id = Column(Integer, ForeignKey("visits.id"), unique=True, nullable=False)
-    overlay_b64 = Column(Text, nullable=False)
-    boundary_b64 = Column(Text, nullable=False)
-    mask_b64 = Column(Text, nullable=False)
+
+    # Phase 1 overlays
+    overlay_b64 = Column(Text, nullable=True)
+    boundary_b64 = Column(Text, nullable=True)
+    mask_b64 = Column(Text, nullable=True)
+
+    # Phase 2 overlays
+    p2_overlay_b64 = Column(Text, nullable=True)
+    p2_boundary_b64 = Column(Text, nullable=True)
+    p2_mask_b64 = Column(Text, nullable=True)
+    p2_tissue_b64 = Column(Text, nullable=True)
 
     visit = relationship("Visit", back_populates="images")
 
@@ -108,6 +132,43 @@ class Message(Base):
 
 def init_db():
     Base.metadata.create_all(bind=engine)
+    # Lightweight in-place migration for SQLite: add any missing Phase 2 columns.
+    if "sqlite" in DATABASE_URL:
+        _sqlite_migrate()
+
+
+def _sqlite_migrate():
+    from sqlalchemy import inspect, text
+    insp = inspect(engine)
+
+    def add_cols(table, wanted):
+        existing = {c["name"] for c in insp.get_columns(table)}
+        with engine.begin() as conn:
+            for col_name, col_type in wanted.items():
+                if col_name not in existing:
+                    conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {col_name} {col_type}"))
+
+    add_cols("visits", {
+        "phases_run": "TEXT DEFAULT 'phase1'",
+        "p2_coverage_pct": "FLOAT",
+        "p2_infection_score": "FLOAT",
+        "p2_infection_level": "TEXT",
+        "p2_infection_color": "TEXT",
+        "p2_infection_override": "TEXT",
+        "p2_severity_label": "TEXT",
+        "p2_features_json": "TEXT",
+        "p2_wagner_grade": "INTEGER",
+        "p2_wagner_confidence": "FLOAT",
+        "p2_wagner_title": "TEXT",
+        "p2_wagner_description": "TEXT",
+        "p2_wagner_color": "TEXT",
+    })
+    add_cols("visit_images", {
+        "p2_overlay_b64": "TEXT",
+        "p2_boundary_b64": "TEXT",
+        "p2_mask_b64": "TEXT",
+        "p2_tissue_b64": "TEXT",
+    })
 
 
 def get_db():

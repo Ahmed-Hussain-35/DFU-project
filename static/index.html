@@ -32,7 +32,6 @@
   }
   .mono{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
   #root{min-height:100vh;display:flex;flex-direction:column}
-
   .wrap{max-width:1200px;width:100%;margin:0 auto;padding:0 24px;flex:1;display:flex;flex-direction:column}
   header.top{
     display:flex;align-items:center;justify-content:space-between;
@@ -42,7 +41,6 @@
   .brand h1{font-size:19px;font-weight:700;margin:0;letter-spacing:-.01em}
   .brand .tag{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint)}
   .userbar{display:flex;align-items:center;gap:14px;font-size:13px;color:var(--ink-dim)}
-
   .card{background:var(--panel);border:1px solid var(--line);border-radius:14px}
   button.primary{
     padding:11px 18px;background:var(--teal);color:#06110f;border:none;
@@ -63,16 +61,13 @@
   .err{color:#f08c8c;background:#1c0f0f;border:1px solid #3a1a1a;padding:10px 12px;border-radius:9px;font-size:12.5px;margin-bottom:12px}
   .warn{background:#1e1608;border:1px solid #3a2c10;color:#f0b866;padding:9px 12px;border-radius:9px;font-size:12.5px;margin-top:10px}
   .disclaimer{font-size:11px;color:var(--ink-faint);text-align:center;padding:18px 0;line-height:1.5;flex-shrink:0}
-
   .auth-center{flex:1;display:flex;align-items:center;justify-content:center}
   .authcard{width:100%;max-width:380px;padding:32px}
   .authcard h2{margin:0 0 20px;font-size:20px}
   .switch{text-align:center;margin-top:16px;font-size:12.5px;color:var(--ink-dim)}
   .switch a{color:var(--teal);cursor:pointer}
-
   .main-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;padding:24px 0 8px;align-items:start}
   @media(max-width:900px){.main-grid{grid-template-columns:1fr}}
-
   .viewer{padding:0;overflow:hidden}
   .viewer .tabs{display:flex;gap:2px;padding:8px;border-bottom:1px solid var(--line);background:var(--panel2);flex-wrap:wrap}
   .tab{
@@ -94,7 +89,6 @@
   .drop:hover{border-color:var(--teal);background:#0f1c22}
   .drop h3{margin:0 0 6px;font-size:15px;font-weight:600}
   .drop p{margin:0;font-size:12.5px;color:var(--ink-dim)}
-
   .readout{display:flex;flex-direction:column}
   .rd-section{padding:18px;border-bottom:1px solid var(--line)}
   .rd-section:last-child{border-bottom:none}
@@ -102,36 +96,31 @@
   .sev-row{display:flex;align-items:center;gap:10px}
   .sev-chip{width:11px;height:11px;border-radius:3px;flex-shrink:0}
   .sev-label{font-size:17px;font-weight:700}
-
   .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .stat{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
   .stat .k{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint)}
   .stat .v{font-size:23px;font-weight:600;margin-top:5px;line-height:1}
   .stat .v .u{font-size:12px;color:var(--ink-dim);font-weight:400}
-
   .featrow{margin-bottom:10px}
   .featrow:last-child{margin-bottom:0}
   .featrow-top{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px}
   .featrow-top .name{color:var(--ink-dim)}
   .track{height:6px;background:#0c1418;border-radius:4px;overflow:hidden}
   .fill{height:100%;border-radius:4px}
-
   .placeholder{padding:60px 24px;text-align:center;color:var(--ink-faint);font-size:13px}
-
   .hist-item{
-    display:grid;grid-template-columns:auto 1fr auto auto auto;gap:12px;align-items:center;
+    display:grid;grid-template-columns:auto 1fr auto 1fr auto;gap:12px;align-items:center;
     padding:11px 14px;background:var(--panel2);border-radius:8px;margin-bottom:8px;font-size:12.5px;
   }
   .hist-item .status{
     font-size:10.5px;padding:3px 8px;border-radius:20px;background:var(--bg);
     color:var(--ink-dim);text-transform:uppercase;letter-spacing:.04em;
   }
-
-  .doc-shell{max-width:520px;margin:32px auto;padding:26px}
-  .doc-shell h3{margin:0 0 4px}
-  label.check{display:flex;align-items:center;gap:9px;font-size:13.5px;margin:14px 0}
-  label.check input{width:16px;height:16px;flex-shrink:0;margin:0;accent-color:var(--teal)}
-  /* animations */
+  label.check{display:flex;align-items:center;gap:9px;font-size:13.5px;margin:14px 0; cursor:pointer;}
+  label.check input{width:16px;height:16px;flex-shrink:0;margin:0;accent-color:var(--teal); cursor:pointer;}
+  .main-nav{display:flex; gap:10px; margin-top:20px;}
+  .main-nav button{background:transparent; border:none; color:var(--ink-dim); font-size:15px; font-weight:600; padding:10px 20px; border-bottom:2px solid transparent; cursor:pointer;}
+  .main-nav button.active{color:var(--teal); border-bottom-color:var(--teal);}
   @keyframes spin{to{transform:rotate(360deg)}}
   @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
   @keyframes popIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
@@ -139,13 +128,13 @@
   .reveal-in{animation:revealIn .32s cubic-bezier(.22,.85,.3,1)}
   button{transition:transform .1s ease, opacity .1s ease}
   button:active{transform:scale(.96)}
-  button:disabled{opacity:.6;cursor:not-allowed}
   .spin{display:inline-block;animation:spin .7s linear infinite}
   .fade-in{animation:fadeIn .28s ease}
   .pop-in{animation:popIn .2s ease}
   .card{animation:fadeIn .25s ease}
   .hist-item{transition:background .15s ease}
   .hist-item:hover{background:var(--line)}
+  .loading-row { opacity: 0.6; pointer-events: none; }
 </style>
 </head>
 <body>
@@ -153,13 +142,16 @@
 <script type="text/babel">
 const {useState,useEffect,useCallback} = React;
 const API = "";
+const FEATURE_MAX = {Redness:100,Necrosis:100,Pus:100,Slough:100,Granulation:100,Swelling:100,Irregularity:100,Size:100};
+const FEATURE_TINT = {Redness:"#e05c5c",Necrosis:"#333",Pus:"#e0b64a",Slough:"#f1c40f",Granulation:"#e74c3c",Swelling:"#d98a4a",Irregularity:"#7aa0c0",Size:"#38c2b6"};
 
-const FEATURE_MAX = {Redness:60,Necrosis:60,Pus:40,Swelling:60,Irregularity:100,Size:100};
-const FEATURE_TINT = {Redness:"#e05c5c",Necrosis:"#b0473b",Pus:"#e0b64a",Swelling:"#d98a4a",Irregularity:"#7aa0c0",Size:"#38c2b6"};
+// Helper to remove any emojis from backend text payloads
+const stripEmoji = (str) => {
+  if (typeof str !== 'string') return str;
+  return str.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{2300}-\u{23FF}]/gu, '').trim();
+};
 
 function useAuth(){
-  // sessionStorage (not localStorage) -> each browser TAB keeps its own session,
-  // so patient in one tab + doctor in another never overwrite each other.
   const [token,setToken] = useState(sessionStorage.getItem("dfu_token"));
   const [role,setRole] = useState(sessionStorage.getItem("dfu_role"));
   const [name,setName] = useState(sessionStorage.getItem("dfu_name"));
@@ -170,8 +162,7 @@ function useAuth(){
     setToken(t); setRole(r); setName(n); setIsVerified(!!v);
   };
   const logout = () => {
-    sessionStorage.removeItem("dfu_token"); sessionStorage.removeItem("dfu_role");
-    sessionStorage.removeItem("dfu_name"); sessionStorage.removeItem("dfu_verified");
+    sessionStorage.clear();
     setToken(null); setRole(null); setName(null); setIsVerified(false);
   };
   return {token,role,name,isVerified,login,logout};
@@ -184,7 +175,7 @@ function AuthForm({onAuth}){
   const [error,setError] = useState(null);
   const [busy,setBusy] = useState(false);
   const [doctors,setDoctors] = useState([]);
-
+  
   useEffect(()=>{
     if(mode==="register" && form.role==="patient"){
       fetch(API+"/auth/doctors").then(r=>r.json()).then(setDoctors).catch(()=>setDoctors([]));
@@ -204,15 +195,10 @@ function AuthForm({onAuth}){
       }
       const data = await res.json();
       if(!res.ok) throw new Error(data.detail || "Failed");
-
-      // doctor registration + a license file selected -> upload it right away,
-      // using the fresh token, before switching into the app
       if(mode==="register" && form.role==="doctor" && licenseFile){
         const fd = new FormData(); fd.append("file",licenseFile);
-        await fetch(API+"/auth/doctor/upload-license",{method:"POST",
-          headers:{Authorization:"Bearer "+data.access_token}, body:fd}).catch(()=>{});
+        await fetch(API+"/auth/doctor/upload-license",{method:"POST", headers:{Authorization:"Bearer "+data.access_token}, body:fd}).catch(()=>{});
       }
-
       onAuth(data.access_token, data.role, data.full_name, data.is_verified);
     }catch(err){ setError(err.message); }
     finally{ setBusy(false); }
@@ -224,52 +210,27 @@ function AuthForm({onAuth}){
         <h2>{mode==="login"?"Log in":"Create account"}</h2>
         {error && <div className="err">{error}</div>}
         <form onSubmit={submit}>
-          {mode==="register" &&
-            <input placeholder="Full name" value={form.full_name}
-              onChange={e=>setForm({...form,full_name:e.target.value})} required/>}
-          <input type="email" placeholder="Email" value={form.email}
-            onChange={e=>setForm({...form,email:e.target.value})} required/>
-          <input type="password" placeholder="Password" value={form.password}
-            onChange={e=>setForm({...form,password:e.target.value})} required/>
+          {mode==="register" && <input placeholder="Full name" value={form.full_name} onChange={e=>setForm({...form,full_name:e.target.value})} required/>}
+          <input type="email" placeholder="Email" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} required/>
+          <input type="password" placeholder="Password" value={form.password} onChange={e=>setForm({...form,password:e.target.value})} required/>
           {mode==="register" &&
             <select value={form.role} onChange={e=>setForm({...form,role:e.target.value,doctor_id:""})}>
-              <option value="patient">Patient</option>
-              <option value="doctor">Doctor</option>
+              <option value="patient">Patient</option><option value="doctor">Doctor</option>
             </select>}
           {mode==="register" && form.role==="patient" &&
             <select value={form.doctor_id} onChange={e=>setForm({...form,doctor_id:e.target.value})} required>
               <option value="" disabled>Choose your doctor…</option>
-              {doctors.map(d=>
-                <option key={d.doctor_id} value={d.doctor_id}>Dr. {d.full_name} — {d.specialty}</option>)}
+              {doctors.map(d=><option key={d.doctor_id} value={d.doctor_id}>Dr. {d.full_name} — {d.specialty}</option>)}
               {doctors.length===0 && <option value="" disabled>No verified doctors yet</option>}
             </select>}
           {mode==="register" && form.role==="doctor" &&
-            <input placeholder="Medical license number" value={form.license_number}
-              onChange={e=>setForm({...form,license_number:e.target.value})}/>}
-          {mode==="register" && form.role==="doctor" &&
-            <input placeholder="State Medical Council (e.g. Telangana State Medical Council)"
-              value={form.medical_council}
-              onChange={e=>setForm({...form,medical_council:e.target.value})}/>}
-          {mode==="register" && form.role==="doctor" &&
-            <div style={{marginBottom:12}}>
-              <label style={{fontSize:12,color:"var(--ink-dim)",display:"block",marginBottom:6}}>
-                License certificate (image or PDF, optional but recommended)</label>
-              <input type="file" accept="image/*,.pdf"
-                onChange={e=>setLicenseFile(e.target.files[0]||null)}/>
-            </div>}
-          {mode==="register" && form.role==="doctor" &&
-            <p style={{fontSize:11.5,color:"var(--ink-faint)",marginTop:-6,marginBottom:12}}>
-              Your account needs admin approval before patients can select you. None of this is
-              checked against a real medical registry automatically — an admin reviews it manually.</p>}
-          <button className="primary" style={{width:"100%"}} disabled={busy}>
-            {busy?"...":mode==="login"?"Log in":"Register"}
-          </button>
+            <><input placeholder="Medical license number" value={form.license_number} onChange={e=>setForm({...form,license_number:e.target.value})}/>
+            <input placeholder="State Medical Council" value={form.medical_council} onChange={e=>setForm({...form,medical_council:e.target.value})}/>
+            <div style={{marginBottom:12}}><label style={{fontSize:12,color:"var(--ink-dim)",display:"block",marginBottom:6}}>License certificate (optional)</label>
+            <input type="file" accept="image/*,.pdf" onChange={e=>setLicenseFile(e.target.files[0]||null)}/></div></>}
+          <button className="primary" style={{width:"100%"}} disabled={busy}>{busy?"...":mode==="login"?"Log in":"Register"}</button>
         </form>
-        <div className="switch">
-          {mode==="login"
-            ? <>No account? <a onClick={()=>setMode("register")}>Register</a></>
-            : <>Have an account? <a onClick={()=>setMode("login")}>Log in</a></>}
-        </div>
+        <div className="switch">{mode==="login"?<>No account? <a onClick={()=>setMode("register")}>Register</a></>:<>Have an account? <a onClick={()=>setMode("login")}>Log in</a></>}</div>
       </div>
     </div>
   );
@@ -285,36 +246,39 @@ function Bar({name,value,max,tint}){
   );
 }
 
-function Readout({result,extra,showVisitId=true}){
-  if(!result) return <div className="card readout"><div className="placeholder">Upload a photo to see the analysis here.</div></div>;
-  const {infection,coverage_pct,features,severity_label,visit_id} = result;
+function Readout({title, data, extra}){
+  if(!data) return null;
+  const {infection,coverage_pct,features,severity_label,wagner} = data;
   return (
-    <div className="card readout">
-      {visit_id && showVisitId && (
-        <div className="rd-section" style={{background:"var(--panel2)"}}>
-          <div className="eyebrow">Visit ID — share this with your doctor</div>
-          <div style={{display:"flex",alignItems:"center",gap:10}}>
-            <span className="mono" style={{fontSize:20,fontWeight:700,color:"var(--teal)"}}>#{visit_id}</span>
-            <button className="ghost" onClick={()=>navigator.clipboard.writeText(String(visit_id))}>Copy</button>
+    <div className="card readout" style={{borderTop:`4px solid ${infection?.color || 'var(--teal)'}`}}>
+      <div className="rd-section" style={{background:"var(--panel2)"}}>
+        <strong style={{color:infection?.color}}>{title}</strong>
+      </div>
+      {wagner && (
+        <div className="rd-section">
+          <div className="eyebrow">ML Wagner Grade</div>
+          <div className="sev-row">
+            <span className="sev-chip" style={{background:wagner.color}}/>
+            <span className="sev-label" style={{color:wagner.color}}>{stripEmoji(wagner.title)} (G{wagner.grade})</span>
           </div>
+          <div style={{fontSize:12, color:"var(--ink-dim)", marginTop:6}}>{wagner.description}</div>
+          <div style={{fontSize:11, color:"var(--ink-faint)", marginTop:4}}>Confidence: {wagner.confidence}%</div>
         </div>
       )}
       <div className="rd-section">
-        <div className="eyebrow">AI Visual Indicator (not a diagnosis)</div>
+        <div className="eyebrow">Infection Severity</div>
         <div className="sev-row">
           <span className="sev-chip" style={{background:infection.color}}/>
-          <span className="sev-label" style={{color:infection.color}}>{infection.level}</span>
+          <span className="sev-label" style={{color:infection.color}}>{stripEmoji(infection.level)}</span>
         </div>
       </div>
       <div className="rd-section">
         <div className="stat-grid">
-          <div className="stat"><div className="k">Coverage</div>
-            <div className="v mono">{coverage_pct.toFixed(2)}<span className="u"> %</span></div></div>
-          <div className="stat"><div className="k">Infection score</div>
-            <div className="v mono" style={{color:infection.color}}>{infection.score.toFixed(0)}<span className="u"> /100</span></div></div>
+          <div className="stat"><div className="k">Coverage</div><div className="v mono">{coverage_pct.toFixed(2)}<span className="u"> %</span></div></div>
+          <div className="stat"><div className="k">Infection score</div><div className="v mono" style={{color:infection.color}}>{infection.score.toFixed(0)}<span className="u"> /100</span></div></div>
         </div>
         <div style={{marginTop:12}} className="track"><div className="fill" style={{width:infection.score+"%",background:infection.color}}/></div>
-        {infection.override && <div className="warn">⚠ {infection.override}</div>}
+        {infection.override && <div className="warn">Warning: {stripEmoji(infection.override)}</div>}
       </div>
       {features && (
         <div className="rd-section">
@@ -325,7 +289,7 @@ function Readout({result,extra,showVisitId=true}){
         </div>
       )}
       <div className="rd-section" style={{fontSize:11,color:"var(--ink-faint)"}}>
-        Size-based severity: <b className="mono" style={{color:"var(--ink)"}}>{severity_label}</b>
+        Size-based severity: <b className="mono" style={{color:"var(--ink)"}}>{stripEmoji(severity_label)}</b>
       </div>
       {extra && <div className="rd-section">{extra}</div>}
     </div>
@@ -341,8 +305,8 @@ function ChatPanel({fetchUrl,token,myUserLabel,otherUserId}){
   const wsRef = React.useRef(null);
 
   useEffect(()=>{
-    fetch(API+fetchUrl,{headers:{Authorization:"Bearer "+token}})
-      .then(r=>r.ok?r.json():[]).then(setMessages).catch(()=>{});
+    if(!fetchUrl) return;
+    fetch(API+fetchUrl,{headers:{Authorization:"Bearer "+token}}).then(r=>r.ok?r.json():[]).then(setMessages).catch(()=>{});
   },[fetchUrl,token]);
 
   useEffect(()=>{
@@ -360,13 +324,11 @@ function ChatPanel({fetchUrl,token,myUserLabel,otherUserId}){
     return ()=>ws.close();
   },[otherUserId,token]);
 
-  useEffect(()=>{
-    if(boxRef.current) boxRef.current.scrollTop = boxRef.current.scrollHeight;
-  },[messages]);
+  useEffect(()=>{ if(boxRef.current) boxRef.current.scrollTop = boxRef.current.scrollHeight; },[messages]);
 
   const send = ()=>{
     if(!text.trim()) return;
-    if(!wsRef.current || wsRef.current.readyState!==1){ setError("Not connected yet — wait a moment."); return; }
+    if(!wsRef.current || wsRef.current.readyState!==1){ setError("Not connected yet."); return; }
     wsRef.current.send(JSON.stringify({to_user_id:otherUserId, content:text}));
     setText("");
   };
@@ -375,28 +337,303 @@ function ChatPanel({fetchUrl,token,myUserLabel,otherUserId}){
     <div className="card" style={{padding:0,display:"flex",flexDirection:"column",height:340}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 18px 0"}}>
         <div className="eyebrow" style={{marginBottom:0}}>Messages</div>
-        <span className="mono" style={{fontSize:10,color:connected?"var(--teal)":"var(--ink-faint)"}}>
-          {connected?"● live":"○ connecting…"}</span>
+        <span className="mono" style={{fontSize:10,color:connected?"var(--teal)":"var(--ink-faint)"}}>{connected?"Live":"Connecting..."}</span>
       </div>
       <div ref={boxRef} style={{flex:1,overflowY:"auto",padding:"10px 18px",display:"flex",flexDirection:"column",gap:8}}>
-        {messages.length===0 && <p style={{color:"var(--ink-faint)",fontSize:12.5}}>No messages yet.</p>}
+        {!otherUserId && <p style={{color:"var(--ink-faint)",fontSize:12.5}}>Select a patient or load a visit to start chatting.</p>}
+        {otherUserId && messages.length===0 && <p style={{color:"var(--ink-faint)",fontSize:12.5}}>No messages yet.</p>}
         {messages.map(m=>(
           <div key={m.id} className="pop-in" style={{alignSelf:m.sender_name===myUserLabel?"flex-end":"flex-start",maxWidth:"78%"}}>
             <div style={{fontSize:10.5,color:"var(--ink-faint)",marginBottom:2}}>{m.sender_name}</div>
-            <div style={{background:m.sender_name===myUserLabel?"var(--teal-dim)":"var(--panel2)",
-              border:"1px solid var(--line)",borderRadius:10,padding:"7px 11px",fontSize:13}}>{m.content}</div>
+            <div style={{background:m.sender_name===myUserLabel?"var(--teal-dim)":"var(--panel2)",border:"1px solid var(--line)",borderRadius:10,padding:"7px 11px",fontSize:13}}>{m.content}</div>
           </div>
         ))}
       </div>
       <div style={{display:"flex",gap:8,padding:14,borderTop:"1px solid var(--line)"}}>
-        <input placeholder="Type a message…" value={text}
-          onChange={e=>setText(e.target.value)}
-          onKeyDown={e=>e.key==="Enter" && send()}
-          style={{marginBottom:0}}/>
-        <button className="primary" onClick={send}>Send</button>
+        <input placeholder="Type a message…" value={text} onChange={e=>setText(e.target.value)} onKeyDown={e=>e.key==="Enter" && send()} style={{marginBottom:0}} disabled={!otherUserId}/>
+        <button className="primary" onClick={send} disabled={!otherUserId}>Send</button>
       </div>
       {error && <div style={{padding:"0 14px 10px"}}><div className="err">{error}</div></div>}
     </div>
+  );
+}
+
+function ProgressionPanel({token, history}){
+  const [oldId, setOldId] = useState("");
+  const [newId, setNewId] = useState("");
+  const [phase, setPhase] = useState("phase2");
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const performAnalysis = async()=>{
+      if(phase === "phase2" && (!oldId || !newId)) return;
+      if(phase === "phase1" && !oldId) return;
+      setLoading(true);
+      try {
+         let res, json;
+         if (phase === "phase1") {
+             res = await fetch(API+`/visits/${oldId}/simulate`, {
+                 method: "POST",
+                 headers: {"Content-Type": "application/json", Authorization: "Bearer "+token}
+             });
+         } else {
+             res = await fetch(API+"/visits/compare", {
+                 method: "POST",
+                 headers: {"Content-Type": "application/json", Authorization: "Bearer "+token},
+                 body: JSON.stringify({old_visit_id: Number(oldId), new_visit_id: Number(newId), phase})
+             });
+         }
+         json = await res.json();
+         if(!res.ok) throw new Error(json.detail || "Execution failed");
+         setData({...json, phase});
+      } catch(e) { alert(e.message); }
+      setLoading(false);
+  };
+
+  return (
+      <div style={{marginBottom:30}}>
+         <div className="card" style={{padding:20, display:'flex', gap:15, alignItems:'center', flexWrap:'wrap'}}>
+             <div style={{display:'flex', flexDirection:'column', flex:1}}>
+               <label className="eyebrow">{phase === "phase1" ? "Target Simulation Visit" : "OLD Visit"}</label>
+               <select value={oldId} onChange={e=>setOldId(e.target.value)} style={{marginBottom:0}}>
+                  <option value="">Select visit...</option>
+                  {history.map(v=><option key={v.visit_id} value={v.visit_id}>Visit #{v.visit_id} ({v.created_at.split("T")[0]})</option>)}
+               </select>
+             </div>
+             {phase === "phase2" && <span style={{marginTop:20, fontWeight:'bold', color:'var(--ink-dim)'}}>VS</span>}
+             {phase === "phase2" && (
+               <div style={{display:'flex', flexDirection:'column', flex:1}}>
+                 <label className="eyebrow">NEW Visit</label>
+                 <select value={newId} onChange={e=>setNewId(e.target.value)} style={{marginBottom:0}}>
+                    <option value="">Select newer visit...</option>
+                    {history.map(v=><option key={v.visit_id} value={v.visit_id}>Visit #{v.visit_id} ({v.created_at.split("T")[0]})</option>)}
+                 </select>
+               </div>
+             )}
+             <div style={{display:'flex', flexDirection:'column', width:120}}>
+               <label className="eyebrow">Model Type</label>
+               <select value={phase} onChange={e=>{setPhase(e.target.value); setData(null);}} style={{marginBottom:0}}>
+                   <option value="phase1">Simulation Model</option>
+                   <option value="phase2">Comparison Model</option>
+               </select>
+             </div>
+             <button className="primary" onClick={performAnalysis} disabled={loading} style={{marginTop:20}}>
+                 {loading ? 'Processing...' : (phase === 'phase1' ? 'Run Simulation' : 'Compare')}
+             </button>
+         </div>
+
+         {/* PHASE 1 SIMULATION UI */}
+         {data && data.phase === "phase1" && (
+             <div id="prog-report" className="card reveal-in" style={{padding:20, marginTop:20}}>
+                 <div style={{display:'flex',justifyContent:'space-between',marginBottom:20, alignItems:'center'}}>
+                    <h2 style={{margin:0}}>30-Day Progression Simulation(Heuristic-based)</h2>
+                 </div>
+
+                 <div style={{
+                    background: data.clinical_decision.color === "#c0392b" ? "#2a1010" : "var(--panel2)",
+                    border: `1px solid ${data.clinical_decision.color}`,
+                    padding: 18, borderRadius: 8, marginBottom: 20
+                 }}>
+                    <h3 style={{margin:0, color: data.clinical_decision.color}}>
+                        {stripEmoji(data.clinical_decision.level)}
+                    </h3>
+                    <p style={{margin:"8px 0 12px", color:"var(--ink)"}}>{stripEmoji(data.clinical_decision.advice)}</p>
+                    <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:12, fontSize:13}}>
+                       <div>
+                          <div className="eyebrow" style={{marginBottom:4}}>Wagner Grade</div>
+                          <div style={{fontWeight:600}}>
+                             {data.wagner ? `G${data.wagner.grade} — ${stripEmoji(data.wagner.title?.split('—')[1]?.trim() || '')}` : '—'}
+                          </div>
+                       </div>
+                       <div>
+                          <div className="eyebrow" style={{marginBottom:4}}>Infection</div>
+                          <div style={{fontWeight:600, color: data.infection?.color}}>
+                             {data.infection ? `${data.infection.score}/100 · ${stripEmoji(data.infection.level)}` : '—'}
+                          </div>
+                       </div>
+                       <div>
+                          <div className="eyebrow" style={{marginBottom:4}}>Coverage (Day 0)</div>
+                          <div style={{fontWeight:600}} className="mono">
+                             {data.coverage_pct != null ? `${data.coverage_pct.toFixed(2)}%` : '—'}
+                          </div>
+                       </div>
+                    </div>
+                    {data.infection?.override && (
+                       <div className="warn" style={{marginTop:12}}>Warning: {stripEmoji(data.infection.override)}</div>
+                    )}
+                 </div>
+
+                 <div style={{marginBottom:32}}>
+                     <div className="eyebrow" style={{fontSize:12, color:"#27ae60", marginBottom:12}}>
+                        WITH TREATMENT — Healing Progression Timeline (Erosion)
+                     </div>
+                     <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(180px, 1fr))', gap:12}}>
+                         {data.healing_timeline.map(frame => (
+                             <div key={frame.day} className="card" style={{background:"var(--panel2)", overflow:"hidden", textAlign:"center", border:"1px solid var(--line)"}}>
+                                 <div style={{padding:"6px", background:"#0c1418", fontSize:11, color:"var(--ink-dim)"}} className="mono">Day {frame.day}</div>
+                                 <div style={{padding:"10px", display:"flex", justifyContent:"center"}}>
+                                     <img src={frame.overlay} style={{maxWidth:"100%", height:"120px", borderRadius:4, objectFit:"cover"}} alt={`H Day ${frame.day}`}/>
+                                 </div>
+                                 <div style={{padding:"0 10px 10px"}}>
+                                     <div style={{fontSize:11.5}}>Cov: <b>{frame.coverage_pct.toFixed(2)}%</b></div>
+                                     <div style={{fontSize:10.5, color:"#27ae60"}} className="mono">
+                                         {frame.change_pct > 0 ? "+" : ""}{frame.change_pct.toFixed(1)}%
+                                     </div>
+                                 </div>
+                             </div>
+                         ))}
+                     </div>
+                 </div>
+
+                 <div style={{marginBottom:24}}>
+                     <div className="eyebrow" style={{fontSize:12, color:"#c0392b", marginBottom:12}}>
+                        WITHOUT TREATMENT — Deterioration Progression Timeline (Dilation)
+                     </div>
+                     <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(180px, 1fr))', gap:12}}>
+                         {data.worsening_timeline.map(frame => (
+                             <div key={frame.day} className="card" style={{background:"var(--panel2)", overflow:"hidden", textAlign:"center", border:"1px solid var(--line)"}}>
+                                 <div style={{padding:"6px", background:"#0c1418", fontSize:11, color:"var(--ink-dim)"}} className="mono">Day {frame.day}</div>
+                                 <div style={{padding:"10px", display:"flex", justifyContent:"center"}}>
+                                     <img src={frame.overlay} style={{maxWidth:"100%", height:"120px", borderRadius:4, objectFit:"cover"}} alt={`W Day ${frame.day}`}/>
+                                 </div>
+                                 <div style={{padding:"0 10px 10px"}}>
+                                     <div style={{fontSize:11.5}}>Cov: <b>{frame.coverage_pct.toFixed(2)}%</b></div>
+                                     <div style={{fontSize:10.5, color:"#e74c3c"}} className="mono">
+                                         {frame.change_pct > 0 ? "+" : ""}{frame.change_pct.toFixed(1)}%
+                                     </div>
+                                 </div>
+                             </div>
+                         ))}
+                     </div>
+                 </div>
+
+                 <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:16, marginTop:8}}>
+                   {data.healing_alert && data.healing_timeline?.length > 0 && (
+                     <div className="card" style={{background:'var(--panel2)', border:'1px solid #27ae60', padding:18, borderRadius:10}}>
+                       <div className="eyebrow" style={{color:'#27ae60', marginBottom:8}}>HEALING SCENARIO</div>
+                       <div style={{fontSize:15, fontWeight:700, color:'#27ae60', marginBottom:12}}>
+                         Status: {stripEmoji(data.healing_alert.level)}
+                       </div>
+                       <div style={{fontSize:13, lineHeight:1.85, color:'var(--ink)'}}>
+                         <div style={{display:'flex', justifyContent:'space-between'}}>
+                            <span>Wagner Grade</span>
+                            <b>G{data.wagner?.grade ?? '—'} {data.wagner?.title ? `(${stripEmoji(data.wagner.title.split('—')[1]?.trim()||'')})` : ''}</b>
+                         </div>
+                         <div style={{display:'flex', justifyContent:'space-between'}}>
+                            <span>Infection</span>
+                            <b style={{color:data.infection?.color}}>{stripEmoji(data.infection?.level) || '—'}</b>
+                         </div>
+                         <div style={{display:'flex', justifyContent:'space-between'}}>
+                            <span>Initial Cov</span>
+                            <b className="mono">{data.healing_timeline[0].coverage_pct.toFixed(2)}%</b>
+                         </div>
+                         <div style={{display:'flex', justifyContent:'space-between'}}>
+                            <span>Final Cov</span>
+                            <b className="mono">{data.healing_timeline[data.healing_timeline.length-1].coverage_pct.toFixed(2)}%</b>
+                         </div>
+                         <div style={{display:'flex', justifyContent:'space-between'}}>
+                            <span>Change</span>
+                            <b className="mono" style={{color:'#27ae60'}}>{data.healing_timeline[data.healing_timeline.length-1].change_pct.toFixed(1)}%</b>
+                         </div>
+                         <div style={{display:'flex', justifyContent:'space-between'}}>
+                            <span>Urgency</span>
+                            <b>{stripEmoji(data.healing_alert.urgency)}</b>
+                         </div>
+                       </div>
+                       <div style={{marginTop:14, paddingTop:12, borderTop:'1px solid var(--line)', fontSize:12.5, color:'#27ae60'}}>
+                         <b>RECOMMENDATION</b><br/>{stripEmoji(data.healing_alert.advice)}
+                       </div>
+                     </div>
+                   )}
+
+                   {data.worsening_alert && data.worsening_timeline?.length > 0 && (
+                     <div className="card" style={{background:'var(--panel2)', border:'1px solid #c0392b', padding:18, borderRadius:10}}>
+                       <div className="eyebrow" style={{color:'#e74c3c', marginBottom:8}}>WORSENING ALERT</div>
+                       <div style={{fontSize:15, fontWeight:700, color:'#e74c3c', marginBottom:12}}>
+                         Status: {stripEmoji(data.worsening_alert.level)}
+                       </div>
+                       <div style={{fontSize:13, lineHeight:1.85, color:'var(--ink)'}}>
+                         <div style={{display:'flex', justifyContent:'space-between'}}>
+                            <span>Initial Cov</span>
+                            <b className="mono">{data.worsening_timeline[0].coverage_pct.toFixed(2)}%</b>
+                         </div>
+                         <div style={{display:'flex', justifyContent:'space-between'}}>
+                            <span>Final Cov</span>
+                            <b className="mono">{data.worsening_timeline[data.worsening_timeline.length-1].coverage_pct.toFixed(2)}%</b>
+                         </div>
+                         <div style={{display:'flex', justifyContent:'space-between'}}>
+                            <span>Change</span>
+                            <b className="mono" style={{color:'#e74c3c'}}>+{Math.abs(data.worsening_timeline[data.worsening_timeline.length-1].change_pct).toFixed(1)}%</b>
+                         </div>
+                         <div style={{display:'flex', justifyContent:'space-between'}}>
+                            <span>Urgency</span>
+                            <b>{stripEmoji(data.worsening_alert.urgency)}</b>
+                         </div>
+                       </div>
+                       <div style={{marginTop:14, paddingTop:12, borderTop:'1px solid var(--line)', fontSize:12.5, color:'#e74c3c'}}>
+                         <b>ACTION</b><br/>{stripEmoji(data.worsening_alert.advice)}
+                       </div>
+                     </div>
+                   )}
+                 </div>
+             </div>
+         )}
+
+         {/* PHASE 2 COMPARISON UI */}
+         {data && data.phase === "phase2" && (
+             <div id="prog-report" className="card reveal-in" style={{padding:20, marginTop:20}}>
+                 <div style={{display:'flex',justifyContent:'space-between',marginBottom:20, alignItems:'center'}}>
+                    <h2 style={{margin:0}}>Progression Report (Phase 2)</h2>
+                 </div>
+                 
+                 <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:20, marginBottom:20}}>
+                    <div className="card" style={{background:'var(--panel2)', padding:10, textAlign:'center'}}>
+                        <div className="eyebrow" style={{marginBottom:10}}>Old Visit Image (#{data.old_visit.id})</div>
+                        {data.old_visit.data.images?.overlay && (
+                            <img src={data.old_visit.data.images.overlay} alt="Old Visit" style={{width:'100%', borderRadius:8, objectFit:'cover', maxHeight:'250px'}} />
+                        )}
+                    </div>
+                    <div className="card" style={{background:'var(--panel2)', padding:10, textAlign:'center'}}>
+                        <div className="eyebrow" style={{marginBottom:10}}>New Visit Image (#{data.new_visit.id})</div>
+                        {data.new_visit.data.images?.overlay && (
+                            <img src={data.new_visit.data.images.overlay} alt="New Visit" style={{width:'100%', borderRadius:8, objectFit:'cover', maxHeight:'250px'}} />
+                        )}
+                    </div>
+                 </div>
+
+                 <div style={{background:data.verdict.status.includes("DETERIORATING")?"#2a1010":"#0f2a15", border:`1px solid ${data.verdict.color}`, padding:18, borderRadius:8, marginBottom:20}}>
+                    <h3 style={{margin:0, color:data.verdict.color}}>{stripEmoji(data.verdict.status)}</h3>
+                    <p style={{margin:"8px 0 0", color:"var(--ink)"}}>{stripEmoji(data.verdict.action)}</p>
+                    <p style={{margin:"4px 0 0", fontSize:12, color:"var(--ink-dim)"}}>{stripEmoji(data.verdict.detail)}</p>
+                 </div>
+                 <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:20, marginBottom:20}}>
+                    <div className="rd-section" style={{background:'var(--panel2)', borderRadius:8}}>
+                       <div className="eyebrow">OLD VISIT (#{data.old_visit.id})</div>
+                       <div style={{fontSize:14, margin:'4px 0'}}>Coverage: <b>{data.old_visit.data.coverage_pct.toFixed(2)}%</b></div>
+                       <div style={{fontSize:14, margin:'4px 0'}}>Infection: <b style={{color:data.old_visit.data.infection.color}}>{data.old_visit.data.infection.score.toFixed(1)}</b></div>
+                       {data.deltas.wagner && <div style={{fontSize:14, margin:'4px 0'}}>Wagner: <b>G{data.deltas.wagner.old}</b></div>}
+                    </div>
+                    <div className="rd-section" style={{background:'var(--panel2)', borderRadius:8}}>
+                       <div className="eyebrow">NEW VISIT (#{data.new_visit.id})</div>
+                       <div style={{fontSize:14, margin:'4px 0'}}>Coverage: <b>{data.new_visit.data.coverage_pct.toFixed(2)}%</b> <span style={{color:data.deltas.coverage_pct.delta > 0 ? '#e74c3c' : '#27ae60'}}>({data.deltas.coverage_pct.delta>0?'+':''}{data.deltas.coverage_pct.delta.toFixed(2)}%)</span></div>
+                       <div style={{fontSize:14, margin:'4px 0'}}>Infection: <b style={{color:data.new_visit.data.infection.color}}>{data.new_visit.data.infection.score.toFixed(1)}</b> <span style={{color:data.deltas.infection_score.delta > 0 ? '#e74c3c' : '#27ae60'}}>({data.deltas.infection_score.delta>0?'+':''}{data.deltas.infection_score.delta.toFixed(1)})</span></div>
+                       {data.deltas.wagner && <div style={{fontSize:14, margin:'4px 0'}}>Wagner: <b>G{data.deltas.wagner.new}</b> <span style={{color:data.deltas.wagner.delta > 0 ? '#e74c3c' : '#27ae60'}}>({data.deltas.wagner.delta>0?'+':''}{data.deltas.wagner.delta})</span></div>}
+                    </div>
+                 </div>
+                 <div className="eyebrow">Feature Changes</div>
+                 <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:10}}>
+                    {Object.entries(data.deltas.features).map(([k,v])=>(
+                       <div key={k} style={{background:'var(--panel2)', padding:'10px 14px', borderRadius:6, display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                           <span>{k}</span>
+                           <span style={{color:v.trend==="IMPROVED"?"#27ae60":v.trend==="WORSENED"?"#e74c3c":"var(--ink-dim)"}}>
+                              {v.old}% → {v.new}% <span style={{fontSize:11}}>({v.delta>0?'+':''}{v.delta}%)</span>
+                           </span>
+                       </div>
+                    ))}
+                 </div>
+             </div>
+         )}
+      </div>
   );
 }
 
@@ -404,12 +641,15 @@ function PatientView({token,name,logout}){
   const [preview,setPreview] = useState(null);
   const [pendingFile,setPendingFile] = useState(null);
   const [patientNote,setPatientNote] = useState("");
+  const [phases, setPhases] = useState({p1:true, p2:true});
   const [result,setResult] = useState(null);
   const [history,setHistory] = useState([]);
   const [loading,setLoading] = useState(false);
   const [error,setError] = useState(null);
-  const [view,setView] = useState("overlay");
+  const [view,setView] = useState("original");
   const [historyLoading,setHistoryLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("scan");
+  const [loadingVisitId, setLoadingVisitId] = useState(null);
 
   const loadHistory = useCallback(async()=>{
     setHistoryLoading(true);
@@ -418,22 +658,30 @@ function PatientView({token,name,logout}){
       if(res.ok) setHistory(await res.json());
     } finally { setHistoryLoading(false); }
   },[token]);
+
   useEffect(()=>{ loadHistory(); },[loadHistory]);
 
   const pickFile = (file)=>{
     setResult(null); setError(null); setPendingFile(file);
     setPreview(URL.createObjectURL(file));
+    setView("original");
   };
 
   const submitUpload = async()=>{
     if(!pendingFile) return;
-    setError(null); setLoading(true); setView("overlay");
+    setError(null); setLoading(true);
     try{
       const fd = new FormData(); fd.append("file",pendingFile); fd.append("notes",patientNote);
+      const phaseList = [];
+      if(phases.p1) phaseList.push("phase1");
+      if(phases.p2) phaseList.push("phase2");
+      fd.append("phases", phaseList.join(","));
       const res = await fetch(API+"/visits/upload",{method:"POST",headers:{Authorization:"Bearer "+token},body:fd});
       const data = await res.json();
       if(!res.ok) throw new Error(data.detail || "Upload failed");
       setResult(data); setPendingFile(null); setPatientNote("");
+      if(data.phase1) setView("p1_overlay");
+      else if(data.phase2) setView("p2_overlay");
       loadHistory();
     }catch(e){ setError(e.message); }
     finally{ setLoading(false); }
@@ -449,6 +697,7 @@ function PatientView({token,name,logout}){
     const res = await fetch(API+"/messages/patient/contact",{headers:{Authorization:"Bearer "+token}});
     if(res.ok) setDoctorInfo(await res.json());
   },[token]);
+
   useEffect(()=>{ loadDoctorInfo(); },[loadDoctorInfo]);
 
   const startChangeDoctor = ()=>{
@@ -458,30 +707,63 @@ function PatientView({token,name,logout}){
 
   const saveDoctorChange = async()=>{
     if(!newDoctorId) return;
-    const res = await fetch(API+"/auth/patient/change-doctor",{method:"POST",
-      headers:{"Content-Type":"application/json",Authorization:"Bearer "+token},
-      body:JSON.stringify({doctor_id:Number(newDoctorId)})});
+    const res = await fetch(API+"/auth/patient/change-doctor",{method:"POST", headers:{"Content-Type":"application/json",Authorization:"Bearer "+token}, body:JSON.stringify({doctor_id:Number(newDoctorId)})});
     const data = await res.json();
     if(!res.ok){ setDoctorMsg(data.detail||"Failed"); return; }
-    setDoctorMsg("Doctor updated."); setChangingDoctor(false);
-    loadDoctorInfo();
+    setDoctorMsg("Doctor updated."); setChangingDoctor(false); loadDoctorInfo();
   };
 
   const doctorUserId = doctorInfo ? doctorInfo.user_id : null;
-
   const [pastVisit,setPastVisit] = useState(null);
-  const [pastView,setPastView] = useState("overlay");
+  const [pastView,setPastView] = useState("original");
   const [pastError,setPastError] = useState(null);
-  const openPast = async(id)=>{
-    setPastError(null); setPastVisit(null); setPastView("overlay");
-    const res = await fetch(API+`/visits/${id}`,{headers:{Authorization:"Bearer "+token}});
-    const data = await res.json();
-    if(!res.ok){ setPastError(data.detail||"Could not load that visit"); return; }
-    setPastVisit(data);
+
+  const openPast = useCallback(async(id)=>{
+    setPastError(null); setPastVisit(null); setPastView("original");
+    setLoadingVisitId(Number(id));
+    try{
+      const res = await fetch(API+`/visits/${id}`,{headers:{Authorization:"Bearer "+token}});
+      const data = await res.json();
+      if(!res.ok) throw new Error(data.detail||"Could not load that visit");
+      setPastVisit(data);
+      if(data.phase1) setPastView("p1_overlay");
+      else if(data.phase2) setPastView("p2_overlay");
+      setActiveTab("scan");
+      window.location.hash = 'visit-' + id;
+    }catch(e){
+      setPastError(e.message);
+    }finally{
+      setLoadingVisitId(null);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash.startsWith('#visit-')) {
+        openPast(hash.replace('#visit-', ''));
+    }
+  }, [openPast]);
+
+  const buildTabs = (resData) => {
+    const t = [["original", "Original"]];
+    if(resData?.phase1) { t.push(["p1_overlay", "P1 Overlay"]); t.push(["p1_mask", "P1 Mask"]); }
+    if(resData?.phase2) { t.push(["p2_overlay", "P2 Overlay"]); t.push(["p2_tissue", "P2 Tissue"]); t.push(["p2_mask", "P2 Mask"]); }
+    return t;
   };
 
-  const tabs = [["overlay","Overlay"],["boundary","Boundary"],["mask","Mask"],["original","Original"]];
-  const shown = view==="original" ? preview : (result && result.images ? result.images[view] : preview);
+  const getShownImage = (v, resData, prev) => {
+    if(v==="original") return prev;
+    if(resData && v.startsWith("p1_")) return resData.phase1?.images[v.replace("p1_","")];
+    if(resData && v.startsWith("p2_")) return resData.phase2?.images[v.replace("p2_","")];
+    return prev;
+  };
+
+  const currentResult = pastVisit || result;
+  const currentPreview = pastVisit ? (pastVisit.phase1?.images?.original || pastVisit.phase2?.images?.original || preview) : preview;
+  const activeView = pastVisit ? pastView : view;
+  const setActiveView = pastVisit ? setPastView : setView;
+  const activeTabs = buildTabs(currentResult);
+  const shown = pastVisit && activeView==="original" ? getShownImage("p1_overlay", currentResult, preview) || getShownImage("p2_overlay", currentResult, preview) : getShownImage(activeView, currentResult, currentPreview);
 
   return (
     <div className="wrap">
@@ -489,87 +771,73 @@ function PatientView({token,name,logout}){
         <div className="brand"><h1>DFU Clinical Platform</h1><span className="tag">Patient</span></div>
         <div className="userbar">{name || "Patient"}<button className="ghost" onClick={logout}>Log out</button></div>
       </header>
-
-      <div className="main-grid">
-        <div className="card viewer">
-          <div className="tabs">
-            {tabs.map(([id,label])=>
-              <button key={id} className="tab" aria-selected={view===id}
-                disabled={!preview || (id!=="original" && !result)}
-                onClick={()=>setView(id)}>{label}</button>)}
-          </div>
-          <div className="canvas">
-            {!preview && (
-              <div className="drop" onClick={()=>document.getElementById("fileInp").click()}>
-                <h3>Upload a wound photo</h3>
-                <p>Click to browse · JPG or PNG</p>
-                <input id="fileInp" type="file" accept="image/*" hidden
-                  onChange={e=>e.target.files[0] && pickFile(e.target.files[0])}/>
+      <div className="main-nav">
+         <button className={activeTab==="scan"?"active":""} onClick={()=>setActiveTab("scan")}>Scan & Analyze</button>
+         <button className={activeTab==="progression"?"active":""} onClick={()=>setActiveTab("progression")}>Progression Tool</button>
+      </div>
+      {activeTab === "progression" ? (
+         <div style={{marginTop:20}}>
+            <ProgressionPanel token={token} history={history} />
+         </div>
+      ) : (
+        <div id="patient-report-area">
+          {pastError && <div style={{marginTop:16}}><div className="err">{pastError}</div></div>}
+          <div className="main-grid" style={{marginTop:20, paddingTop:0}}>
+            <div className="card viewer">
+              {currentResult && currentResult.visit_id && (
+                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center", padding:"12px 18px",borderBottom:"1px solid var(--line)"}}>
+                    <span className="eyebrow" style={{marginBottom:0}}>Visit #{currentResult.visit_id} — {new Date(currentResult.created_at).toLocaleDateString()}</span>
+                    <div style={{display:'flex', gap:10}}>
+                      <button className="ghost" style={{padding:'6px 12px'}} onClick={()=>{setPastVisit(null); setResult(null); setPendingFile(null); window.history.pushState(null, null, ' ');}}>Close</button>
+                    </div>
+                 </div>
+              )}
+              <div className="tabs">
+                {activeTabs.map(([id,label])=><button key={id} className="tab" aria-selected={activeView===id} disabled={!currentPreview && !currentResult} onClick={()=>setActiveView(id)}>{label}</button>)}
               </div>
-            )}
-            {preview && <img src={shown} alt={view}/>}
-          </div>
-          {preview && (
-            <div style={{padding:"14px 18px",borderTop:"1px solid var(--line)"}}>
-              {!result && !loading && (
-                <div style={{marginBottom:12}}>
+              <div className="canvas">
+                {!currentPreview && !currentResult && (
+                  <div className="drop" onClick={()=>document.getElementById("fileInp").click()}>
+                    <h3>Upload a wound photo</h3><p>Click to browse · JPG or PNG</p>
+                    <input id="fileInp" type="file" accept="image/*" hidden onChange={e=>e.target.files[0] && pickFile(e.target.files[0])}/>
+                  </div>
+                )}
+                {shown && <img src={shown} alt={activeView}/>}
+              </div>
+              {currentPreview && !currentResult && !loading && (
+                <div style={{padding:"14px 18px",borderTop:"1px solid var(--line)"}}>
+                  <div style={{display:'flex', gap:20, marginBottom:15}}>
+                     <label className="check"><input type="checkbox" checked={phases.p1} onChange={e=>setPhases({...phases,p1:e.target.checked})}/> Phase 1 (Heuristic-based)</label>
+                     <label className="check"><input type="checkbox" checked={phases.p2} onChange={e=>setPhases({...phases,p2:e.target.checked})}/> Phase 2 (ML Pipeline)</label>
+                  </div>
                   <div className="eyebrow">Tell your doctor anything relevant (optional)</div>
-                  <textarea placeholder="e.g. it hurts near the edge, started 3 days ago… (Enter to analyze, Shift+Enter for a new line)"
-                    value={patientNote} onChange={e=>setPatientNote(e.target.value)}
-                    onKeyDown={e=>{ if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); submitUpload(); } }}
-                    style={{minHeight:60,marginBottom:10}}/>
-                  <button className="primary" onClick={submitUpload}>Analyze photo</button>
+                  <textarea placeholder="e.g. it hurts near the edge..." value={patientNote} onChange={e=>setPatientNote(e.target.value)} style={{minHeight:60,marginBottom:10}}/>
+                  <div style={{display:'flex', gap:10}}>
+                    <button className="primary" onClick={submitUpload} disabled={!phases.p1 && !phases.p2}>Analyze photo</button>
+                    <button className="ghost" onClick={()=>{setPreview(null);setResult(null);setPendingFile(null);setPatientNote("");}}>Cancel</button>
+                  </div>
                 </div>
               )}
-              <button className="ghost" onClick={()=>{setPreview(null);setResult(null);setPendingFile(null);setPatientNote("");}}>New image</button>
-              {loading && <span className="mono" style={{marginLeft:12,color:"var(--teal)",fontSize:12}}>ANALYZING…</span>}
+              {loading && <div style={{padding:"14px 18px"}}><span className="mono" style={{color:"var(--teal)",fontSize:12}}>ANALYZING...</span></div>}
+              {error && <div style={{padding:"14px 18px"}}><div className="err">{error}</div></div>}
+              {currentResult?.doctor_notes && (
+                <div style={{padding:"14px 18px",borderTop:"1px solid var(--line)",background:"var(--panel2)"}}>
+                  <div className="eyebrow" style={{marginBottom:6}}>Doctor's note</div>
+                  <div style={{fontSize:13.5}}>{currentResult.doctor_notes}</div>
+                </div>
+              )}
             </div>
-          )}
-          {error && <div style={{padding:"0 18px 16px"}}><div className="err">{error}</div></div>}
-          {result && !result.image_quality?.ok && (
-            <div style={{padding:"0 18px 16px"}}>
-              {result.image_quality.warnings.map((w,i)=><div key={i} className="warn">⚠ {w}</div>)}
+            <div style={{display:'flex', flexDirection:'column', gap:20}}>
+               {!currentResult && <div className="card readout"><div className="placeholder">Upload a photo to see the analysis here.</div></div>}
+               {currentResult?.phase1 && <Readout title="Heuristic-based" data={currentResult.phase1} />}
+               {currentResult?.phase2 && <Readout title="ML Pipeline" data={currentResult.phase2} />}
             </div>
-          )}
-        </div>
-
-        <Readout result={result}/>
-      </div>
-
-      <div style={{marginBottom:20}}>
-        <ChatPanel fetchUrl="/messages/patient/thread"
-          token={token} myUserLabel={name} otherUserId={doctorUserId}/>
-      </div>
-
-      {pastError && <div style={{marginBottom:16}}><div className="err">{pastError}</div></div>}
-
-      {pastVisit && (
-        <div className="main-grid reveal-in" style={{marginBottom:20,paddingTop:0}}>
-          <div className="card viewer">
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",
-              padding:"12px 18px",borderBottom:"1px solid var(--line)"}}>
-              <span className="eyebrow" style={{marginBottom:0}}>Visit #{pastVisit.visit_id} — {new Date(pastVisit.created_at).toLocaleDateString()}</span>
-              <button className="ghost" onClick={()=>setPastVisit(null)}>Close</button>
-            </div>
-            <div className="tabs">
-              {[["overlay","Overlay"],["boundary","Boundary"],["mask","Mask"]].map(([id,label])=>
-                <button key={id} className="tab" aria-selected={pastView===id}
-                  onClick={()=>setPastView(id)}>{label}</button>)}
-            </div>
-            <div className="canvas">
-              {pastVisit.images && <img src={pastVisit.images[pastView]} alt={pastView}/>}
-            </div>
-            {pastVisit.doctor_notes && (
-              <div style={{padding:"14px 18px",borderTop:"1px solid var(--line)",background:"var(--panel2)"}}>
-                <div className="eyebrow" style={{marginBottom:6}}>Doctor's note</div>
-                <div style={{fontSize:13.5}}>{pastVisit.doctor_notes}</div>
-              </div>
-            )}
           </div>
-          <Readout result={pastVisit} showVisitId={false}/>
         </div>
       )}
-
+      <div style={{marginBottom:20, marginTop:20}}>
+        <ChatPanel fetchUrl="/messages/patient/thread" token={token} myUserLabel={name} otherUserId={doctorUserId}/>
+      </div>
       <div className="card" style={{margin:"4px 0 20px",padding:18}}>
         <div className="eyebrow">Your doctor</div>
         {!changingDoctor ? (
@@ -581,8 +849,7 @@ function PatientView({token,name,logout}){
           <div>
             <select value={newDoctorId} onChange={e=>setNewDoctorId(e.target.value)}>
               <option value="" disabled>Choose a new doctor…</option>
-              {doctorList.map(d=>
-                <option key={d.doctor_id} value={d.doctor_id}>Dr. {d.full_name} — {d.specialty}</option>)}
+              {doctorList.map(d=><option key={d.doctor_id} value={d.doctor_id}>Dr. {d.full_name} — {d.specialty}</option>)}
             </select>
             <div style={{display:"flex",gap:10}}>
               <button className="primary" onClick={saveDoctorChange}>Save</button>
@@ -592,119 +859,143 @@ function PatientView({token,name,logout}){
         )}
         {doctorMsg && <p style={{fontSize:12.5,color:"var(--teal)",marginTop:8}}>{doctorMsg}</p>}
       </div>
-
       <div className="card" style={{margin:"4px 0 24px",padding:18}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
           <div className="eyebrow" style={{marginBottom:0}}>Visit history</div>
-          <button className="ghost" onClick={loadHistory} disabled={historyLoading}>
-            {historyLoading ? <span className="spin">↻</span> : "Refresh"}
-          </button>
+          <button className="ghost" onClick={loadHistory} disabled={historyLoading}>{historyLoading ? "Refresh" : "Refresh"}</button>
         </div>
         {history.length===0 && <p style={{color:"var(--ink-faint)",fontSize:13,margin:0}}>No visits yet.</p>}
         {history.map(v=>(
           <div key={v.visit_id}>
-            <div className="hist-item" style={{cursor:"pointer"}} onClick={()=>openPast(v.visit_id)}>
-              <span className="mono">#{v.visit_id}</span>
+            <div className={`hist-item ${loadingVisitId === v.visit_id ? 'loading-row' : ''}`} style={{cursor:"pointer"}} onClick={()=>openPast(v.visit_id)}>
+              <span className="mono">{loadingVisitId === v.visit_id ? "Loading..." : "#" + v.visit_id}</span>
               <span className="mono">{new Date(v.created_at).toLocaleDateString()}</span>
               <span className="mono">{v.coverage_pct?.toFixed(2)}%</span>
-              <span className="mono">{v.severity_label}</span>
+              <span className="mono" style={{color:'var(--ink)'}}>{stripEmoji(v.severity_label) || 'UNKNOWN'}</span>
               <span className="status">{v.review_status}</span>
             </div>
-            {v.doctor_notes && (
-              <div style={{background:"var(--panel2)",border:"1px solid var(--line)",borderRadius:8,
-                padding:"10px 14px",marginTop:-4,marginBottom:8,fontSize:12.5,color:"var(--ink-dim)"}}>
-                <span style={{color:"var(--teal)",fontWeight:600}}>Doctor's note: </span>
-                {v.doctor_notes}
-                {v.mask_confirmed===false &&
-                  <div style={{color:"#f0b866",marginTop:4}}>⚠ Doctor flagged the AI mask as incorrect.</div>}
-              </div>
-            )}
           </div>
         ))}
       </div>
-
       <p className="disclaimer">For educational and research use only. Not a medical diagnosis.</p>
     </div>
   );
 }
 
 function DoctorView({token,name,isVerified,logout}){
-  useEffect(()=>{
-    document.body.classList.add("doctor-scope");
-    return ()=> document.body.classList.remove("doctor-scope");
-  },[]);
+  useEffect(()=>{ document.body.classList.add("doctor-scope"); return ()=> document.body.classList.remove("doctor-scope"); },[]);
   const [visitId,setVisitId] = useState("");
   const [visit,setVisit] = useState(null);
   const [notes,setNotes] = useState("");
   const [confirmed,setConfirmed] = useState(true);
   const [error,setError] = useState(null);
   const [msg,setMsg] = useState(null);
-  const [view,setView] = useState("overlay");
+  const [view,setView] = useState("original");
   const [patients,setPatients] = useState([]);
-  const [patientsLoading,setPatientsLoading] = useState(false);
-
-  const [liveVerified,setLiveVerified] = useState(isVerified);
-  useEffect(()=>{
-    fetch(API+"/auth/doctor/status",{headers:{Authorization:"Bearer "+token}})
-      .then(r=>r.ok?r.json():null).then(d=>d && setLiveVerified(d.is_verified)).catch(()=>{});
-  },[token]);
+  const [activeTab, setActiveTab] = useState("review");
+  const [selectedPatientId, setSelectedPatientId] = useState(null);
+  const [loadingVisitId, setLoadingVisitId] = useState(null);
 
   const loadPatients = useCallback(async()=>{
-    setPatientsLoading(true);
-    try{
-      const res = await fetch(API+"/visits/doctor/my-patients",{headers:{Authorization:"Bearer "+token}});
-      if(res.ok) setPatients(await res.json());
-    } finally { setPatientsLoading(false); }
-  },[token]);
+    const res = await fetch(API+"/visits/doctor/my-patients",{headers:{Authorization:"Bearer "+token}});
+    if(res.ok) {
+      const data = await res.json();
+      setPatients(data);
+      if(data.length > 0 && !selectedPatientId) {
+        setSelectedPatientId(data[0].patient_id);
+      }
+    }
+  },[token, selectedPatientId]);
+
   useEffect(()=>{ loadPatients(); },[loadPatients]);
 
-  const load = async(id)=>{
+  const load = useCallback(async(id)=>{
     const useId = id || visitId;
+    if(!useId) return;
     setError(null); setMsg(null); setVisit(null); setVisitId(useId);
-    const res = await fetch(API+`/visits/${useId}`,{headers:{Authorization:"Bearer "+token}});
-    const data = await res.json();
-    if(!res.ok){ setError(data.detail||"Not found"); return; }
-    setVisit(data); setNotes(data.doctor_notes||""); setView("overlay");
-  };
-
-  const [reviewSaving,setReviewSaving] = useState(false);
-  const submitReview = async()=>{
-    setReviewSaving(true);
+    setLoadingVisitId(Number(useId));
     try{
-      const res = await fetch(API+`/visits/${visitId}/review`,{method:"POST",
-        headers:{"Content-Type":"application/json",Authorization:"Bearer "+token},
-        body:JSON.stringify({doctor_notes:notes,mask_confirmed:confirmed,review_status:"reviewed"})});
+      const res = await fetch(API+`/visits/${useId}`,{headers:{Authorization:"Bearer "+token}});
       const data = await res.json();
-      if(!res.ok){ setError(data.detail||"Failed"); return; }
-      setVisit(data); setMsg("Review saved.");
-      loadPatients();
-    } finally { setReviewSaving(false); }
+      if(!res.ok) throw new Error(data.detail||"Not found");
+      setVisit(data); setNotes(data.doctor_notes||"");
+      if(data.patient_id) setSelectedPatientId(data.patient_id);
+      if(data.phase1) setView("p1_overlay"); else if(data.phase2) setView("p2_overlay");
+      setActiveTab("review");
+      window.location.hash = 'visit-' + useId;
+    }catch(e){
+      setError(e.message);
+    }finally{
+      setLoadingVisitId(null);
+    }
+  }, [visitId, token]);
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash.startsWith('#visit-')) {
+        load(hash.replace('#visit-', ''));
+    }
+  }, [load]);
+
+  const submitReview = async()=>{
+    const res = await fetch(API+`/visits/${visitId}/review`,{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+token},body:JSON.stringify({doctor_notes:notes,mask_confirmed:confirmed,review_status:"reviewed"})});
+    if(!res.ok){ setError("Failed to save"); return; }
+    setVisit(await res.json()); setMsg("Review saved."); loadPatients();
   };
 
-  const tabs = [["overlay","Overlay"],["boundary","Boundary"],["mask","Mask"]];
+  const buildTabs = (resData) => {
+    const t = [];
+    if(resData?.phase1) { t.push(["p1_overlay", "P1 Overlay"]); t.push(["p1_mask", "P1 Mask"]); }
+    if(resData?.phase2) { t.push(["p2_overlay", "P2 Overlay"]); t.push(["p2_tissue", "P2 Tissue"]); t.push(["p2_mask", "P2 Mask"]); }
+    return t;
+  };
 
-  const reviewForm = (
-    <div>
-      <div className="eyebrow">Clinician review</div>
-      <textarea placeholder="Doctor notes (Enter to save, Shift+Enter for a new line)"
-        value={notes} onChange={e=>setNotes(e.target.value)}
-        onKeyDown={e=>{ if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); submitReview(); } }}
-        style={{minHeight:80}}/>
-      <label className="check">
-        <input type="checkbox" checked={confirmed} onChange={e=>setConfirmed(e.target.checked)}/>
-        AI mask looks correct
-      </label>
-      <button className="primary" style={{width:"100%"}} onClick={submitReview} disabled={reviewSaving}>
-        {reviewSaving ? <span className="spin">↻</span> : "Save review"}
-      </button>
-      {msg && <p className="fade-in" style={{color:"var(--teal)",fontSize:13,marginTop:10}}>{msg}</p>}
-      {visit && visit.patient_id && (
-        <div style={{marginTop:16}}>
-          <ChatPanel fetchUrl={`/messages/doctor/thread/${visit.patient_id}`}
-            token={token} myUserLabel={name} otherUserId={visit.patient_user_id}/>
+  const getShownImage = (v, resData) => {
+    if(resData && v.startsWith("p1_")) return resData.phase1?.images[v.replace("p1_","")];
+    if(resData && v.startsWith("p2_")) return resData.phase2?.images[v.replace("p2_","")];
+    return null;
+  };
+
+  const currentPatientObj = patients.find(p=>p.patient_id === selectedPatientId);
+  const activeChatUserId = visit ? visit.patient_user_id : (currentPatientObj ? currentPatientObj.patient_user_id : null);
+  const activeChatUrl = visit ? `/messages/doctor/thread/${visit.patient_id}` : (selectedPatientId ? `/messages/doctor/thread/${selectedPatientId}` : null);
+
+  const bottomSections = (
+    <>
+      <div style={{marginBottom:20, marginTop:20}}>
+        <ChatPanel fetchUrl={activeChatUrl} token={token} myUserLabel={name} otherUserId={activeChatUserId}/>
+      </div>
+      <div className="card" style={{margin:"4px 0 20px",padding:18}}>
+        <div className="eyebrow">Your Assigned Patients</div>
+        {patients.length===0 ? (
+          <p style={{color:"var(--ink-faint)",fontSize:13,margin:0}}>No patients assigned yet.</p>
+        ) : (
+          <div style={{display:"flex", gap:10, alignItems:"center"}}>
+            <select value={selectedPatientId||""} onChange={e=>setSelectedPatientId(Number(e.target.value))} style={{marginBottom:0}}>
+              {[...new Map(patients.map(p=>[p.patient_id, p])).values()].map(p=>(
+                <option key={p.patient_id} value={p.patient_id}>Patient #{p.patient_id} — {p.patient_name}</option>
+              ))}
+            </select>
+          </div>
+        )}
+      </div>
+      <div className="card" style={{margin:"4px 0 24px",padding:18}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+          <div className="eyebrow" style={{marginBottom:0}}>My patients' recent visits</div>
+          <button className="ghost" onClick={loadPatients}>Refresh</button>
         </div>
-      )}
-    </div>
+        {patients.length===0 && <p style={{color:"var(--ink-faint)",fontSize:13,margin:0}}>No patient visits found.</p>}
+        {patients.map(v=>(
+          <div key={v.visit_id} className={`hist-item ${loadingVisitId === v.visit_id ? 'loading-row' : ''}`} style={{cursor:"pointer"}} onClick={()=>load(v.visit_id)}>
+            <span className="mono">{loadingVisitId === v.visit_id ? "Loading..." : "#" + v.visit_id}</span>
+            <span>{v.patient_name}</span>
+            <span className="mono">{v.coverage_pct?.toFixed(2)}%</span>
+            <span className="mono" style={{color:'var(--ink)'}}>{stripEmoji(v.severity_label) || 'UNKNOWN'}</span>
+            <span className="status">{v.review_status}</span>
+          </div>
+        ))}
+      </div>
+    </>
   );
 
   return (
@@ -713,203 +1004,124 @@ function DoctorView({token,name,isVerified,logout}){
         <div className="brand"><h1>DFU Clinical Platform</h1><span className="tag">Doctor</span></div>
         <div className="userbar">{name || "Doctor"}<button className="ghost" onClick={logout}>Log out</button></div>
       </header>
-
-      {!liveVerified && (
-        <div className="warn" style={{margin:"18px 0"}}>
-          ⚠ Your account is pending admin approval. Patients cannot select you as their
-          doctor yet, but you can still use everything else here in the meantime.
-        </div>
-      )}
-
-      <div className="card" style={{margin:"24px 0 16px",padding:18}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-          <div className="eyebrow" style={{marginBottom:0}}>My patients</div>
-          <button className="ghost" onClick={loadPatients} disabled={patientsLoading}>
-            {patientsLoading ? <span className="spin">↻</span> : "Refresh"}
-          </button>
-        </div>
-        {patients.length===0 && <p style={{color:"var(--ink-faint)",fontSize:13,margin:0}}>
-          No visits from your patients yet.</p>}
-        {patients.map(v=>(
-          <div key={v.visit_id} className="hist-item" style={{cursor:"pointer"}} onClick={()=>load(v.visit_id)}>
-            <span className="mono">#{v.visit_id}</span>
-            <span>{v.patient_name}</span>
-            <span className="mono">{v.coverage_pct?.toFixed(2)}%</span>
-            <span className="mono">{v.severity_label}</span>
-            <span className="status">{v.review_status}</span>
-          </div>
-        ))}
+      {!isVerified && <div className="warn" style={{margin:"18px 0"}}>⚠ Your account is pending admin approval.</div>}
+      <div className="main-nav">
+         <button className={activeTab==="review"?"active":""} onClick={()=>setActiveTab("review")}>Clinical Review</button>
+         <button className={activeTab==="progression"?"active":""} onClick={()=>setActiveTab("progression")}>Progression Tool</button>
       </div>
 
-      <div className="card" style={{margin:"0 0 16px",padding:18}}>
-        <div className="eyebrow">Or look up any visit by ID</div>
-        <div style={{display:"flex",gap:10}}>
-          <input placeholder="Visit ID (e.g. 384712)" value={visitId}
-            onChange={e=>setVisitId(e.target.value)} style={{marginBottom:0}}/>
-          <button className="primary" onClick={()=>load()}>Load</button>
-        </div>
-        {error && <div className="err" style={{marginTop:12}}>{error}</div>}
-      </div>
-
-      {visit && (
-        <div className="main-grid">
-          <div className="card viewer">
-            {visit.patient_notes && (
-              <div style={{padding:"14px 18px",borderBottom:"1px solid var(--line)",background:"var(--panel2)"}}>
-                <div className="eyebrow" style={{marginBottom:6}}>Patient reported</div>
-                <div style={{fontSize:13.5,color:"var(--ink)"}}>{visit.patient_notes}</div>
-              </div>
-            )}
-            <div className="tabs">
-              {tabs.map(([id,label])=>
-                <button key={id} className="tab" aria-selected={view===id}
-                  onClick={()=>setView(id)}>{label}</button>)}
-            </div>
-            <div className="canvas">
-              {visit.images && <img src={visit.images[view]} alt={view}/>}
-            </div>
-            {!visit.image_quality?.ok && (
-              <div style={{padding:"0 18px 16px"}}>
-                {visit.image_quality.warnings.map((w,i)=><div key={i} className="warn">⚠ {w}</div>)}
-              </div>
-            )}
+      {activeTab === "progression" ? (
+        <div>
+          <div style={{marginTop:20}}>
+            <ProgressionPanel token={token} history={patients} />
           </div>
-          <Readout result={visit} extra={reviewForm} showVisitId={false}/>
+          {bottomSections}
+        </div>
+      ) : (
+        <div>
+          {visit ? (
+            <div id="doctor-report-area" className="main-grid reveal-in" style={{marginTop:20}}>
+              <div className="card viewer">
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center", padding:"12px 18px",borderBottom:"1px solid var(--line)"}}>
+                    <span className="eyebrow" style={{marginBottom:0}}>Visit #{visit.visit_id} — {new Date(visit.created_at).toLocaleDateString()}</span>
+                    <div style={{display:'flex', gap:10}}>
+                      <button className="ghost" style={{padding:'6px 12px'}} onClick={()=>{setVisit(null); window.history.pushState(null, null, ' ');}}>Close</button>
+                    </div>
+                </div>
+                {visit.patient_notes && (
+                  <div style={{padding:"14px 18px",borderBottom:"1px solid var(--line)",background:"var(--panel2)"}}>
+                    <div className="eyebrow" style={{marginBottom:6}}>Patient reported</div>
+                    <div style={{fontSize:13.5,color:"var(--ink)"}}>{visit.patient_notes}</div>
+                  </div>
+                )}
+                <div className="tabs">
+                  {buildTabs(visit).map(([id,label])=><button key={id} className="tab" aria-selected={view===id} onClick={()=>setView(id)}>{label}</button>)}
+                </div>
+                <div className="canvas">
+                  <img src={getShownImage(view, visit)} alt={view}/>
+                </div>
+                <div style={{padding:"18px", borderTop:"1px solid var(--line)"}}>
+                  <div className="eyebrow">Clinician review</div>
+                  <textarea placeholder="Doctor notes" value={notes} onChange={e=>setNotes(e.target.value)} style={{minHeight:80}}/>
+                  <label className="check"><input type="checkbox" checked={confirmed} onChange={e=>setConfirmed(e.target.checked)}/> AI mask looks correct</label>
+                  <button className="primary" style={{width:"100%"}} onClick={submitReview}>Save review</button>
+                  {msg && <p className="fade-in" style={{color:"var(--teal)",fontSize:13,marginTop:10}}>{msg}</p>}
+                </div>
+              </div>
+              <div style={{display:'flex', flexDirection:'column', gap:20}}>
+                 {visit.phase1 && <Readout title="Heuristic-based" data={visit.phase1} />}
+                 {visit.phase2 && <Readout title="ML Pipeline" data={visit.phase2} />}
+              </div>
+            </div>
+          ) : (
+            <div className="card" style={{margin:"24px 0 16px",padding:18}}>
+              <div className="eyebrow">Look up visit by ID</div>
+              <div style={{display:"flex",gap:10}}>
+                <input placeholder="Visit ID (e.g. 384712)" value={visitId} onChange={e=>setVisitId(e.target.value)} style={{marginBottom:0}}/>
+                <button className="primary" onClick={()=>load()}>Load</button>
+              </div>
+              {error && <div className="err" style={{marginTop:12}}>{error}</div>}
+            </div>
+          )}
+          {bottomSections}
         </div>
       )}
+      <p className="disclaimer">For educational and research use only. Not a medical diagnosis.</p>
     </div>
   );
 }
 
 function AdminPanel(){
   const [key,setKey] = useState("");
-  const [showKey,setShowKey] = useState(false);
   const [unlocked,setUnlocked] = useState(false);
   const [pending,setPending] = useState([]);
   const [error,setError] = useState(null);
-  const [msg,setMsg] = useState(null);
-  const [unlocking,setUnlocking] = useState(false);
-  const [approvingId,setApprovingId] = useState(null);
-
-  const viewDocument = async(doctorId)=>{
-    const res = await fetch(API+`/admin/doctor-license/${doctorId}`,{headers:{"X-Admin-Key":key}});
-    if(!res.ok){ setMsg("No document uploaded for this doctor."); return; }
-    const blob = await res.blob();
-    window.open(URL.createObjectURL(blob), "_blank");
-  };
-
-  const openRegistry = ()=>{
-    // The real, official NMC Indian Medical Register — search manually by
-    // name / registration number / State Medical Council. Not auto-filled;
-    // this is an honest "go check yourself" link, not automated verification.
-    window.open("https://www.nmc.org.in/information-desk/indian-medical-register/", "_blank");
-  };
-
   const load = async(k)=>{
-    setError(null); setUnlocking(true);
     try{
       const res = await fetch(API+"/admin/pending-doctors",{headers:{"X-Admin-Key":k}});
-      if(!res.ok){ setError("Wrong admin key, or server rejected the request."); return; }
+      if(!res.ok) throw new Error("Wrong admin key");
       setPending(await res.json()); setUnlocked(true);
-    } finally { setUnlocking(false); }
+    } catch(e){ setError(e.message); }
   };
-
   const approve = async(id)=>{
-    setMsg(null); setApprovingId(id);
-    try{
-      const res = await fetch(API+`/admin/approve-doctor/${id}`,{method:"POST",headers:{"X-Admin-Key":key}});
-      if(res.ok){ setMsg("Approved."); await load(key); }
-    } finally { setApprovingId(null); }
+    await fetch(API+`/admin/approve-doctor/${id}`,{method:"POST",headers:{"X-Admin-Key":key}});
+    load(key);
   };
-
-  if(!unlocked){
-    return (
-      <div className="auth-center">
-        <div className="card authcard">
-          <h2>Admin — verify doctors</h2>
-          <div style={{position:"relative"}}>
-            <input placeholder="Admin key" type={showKey?"text":"password"} value={key}
-              onChange={e=>setKey(e.target.value)} style={{paddingRight:44}}/>
-            <button type="button" onClick={()=>setShowKey(s=>!s)}
-              aria-label={showKey?"Hide key":"Show key"}
-              style={{position:"absolute",right:6,top:6,width:32,height:32,padding:0,
-                background:"transparent",border:"none",cursor:"pointer",color:"var(--ink-faint)",
-                display:"flex",alignItems:"center",justifyContent:"center"}}>
-              {showKey ? (
-                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a18.5 18.5 0 015.06-5.94M9.9 4.24A10.94 10.94 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
-                  <line x1="1" y1="1" x2="23" y2="23"/>
-                </svg>
-              ) : (
-                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-              )}
-            </button>
-          </div>
-          <button className="primary" style={{width:"100%"}} onClick={()=>load(key)} disabled={unlocking}>
-            {unlocking ? <span className="spin">↻</span> : "Unlock"}
-          </button>
-          {error && <div className="err fade-in" style={{marginTop:12}}>{error}</div>}
-        </div>
-      </div>
-    );
-  }
-
+  const viewDocument = async(doctorId)=>{
+    const res = await fetch(API+`/admin/doctor-license/${doctorId}`,{headers:{"X-Admin-Key":key}});
+    if(res.ok) window.open(URL.createObjectURL(await res.blob()), "_blank");
+  };
+  if(!unlocked) return (
+    <div className="auth-center"><div className="card authcard">
+      <h2>Admin Panel</h2><input placeholder="Admin key" type="password" value={key} onChange={e=>setKey(e.target.value)}/>
+      <button className="primary" style={{width:"100%"}} onClick={()=>load(key)}>Unlock</button>
+      {error && <div className="err" style={{marginTop:12}}>{error}</div>}
+    </div></div>
+  );
   return (
-    <div style={{padding:"24px 0"}}>
-      <div className="card" style={{padding:18}}>
-        <div className="eyebrow">Pending doctor verifications</div>
-        {pending.length===0 && <p style={{color:"var(--ink-faint)",fontSize:13}}>Nothing pending.</p>}
-        {pending.map(d=>(
-          <div key={d.doctor_id} className="fade-in" style={{background:"var(--panel2)",
-            border:"1px solid var(--line)",borderRadius:10,padding:"14px 16px",marginBottom:10}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:8}}>
-              <span style={{fontWeight:600}}>Dr. {d.full_name}</span>
-              <span className="mono" style={{fontSize:11,color:"var(--ink-faint)"}}>{d.email}</span>
-            </div>
-            <div style={{fontSize:12.5,color:"var(--ink-dim)",marginBottom:4}}>
-              License #: <span className="mono">{d.license_number || "not given"}</span></div>
-            <div style={{fontSize:12.5,color:"var(--ink-dim)",marginBottom:12}}>
-              Council: {d.medical_council || "not given"} · Specialty: {d.specialty}</div>
-            <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-              <button className="ghost" onClick={()=>viewDocument(d.doctor_id)} disabled={!d.has_license_doc}>
-                {d.has_license_doc ? "View license document" : "No document uploaded"}
-              </button>
-              <button className="ghost" onClick={openRegistry}>Open NMC registry ↗</button>
-              <button className="primary" onClick={()=>approve(d.doctor_id)} disabled={approvingId===d.doctor_id}>
-                {approvingId===d.doctor_id ? <span className="spin">↻</span> : "Approve"}
-              </button>
-            </div>
+    <div className="wrap" style={{padding:"24px 0"}}><div className="card" style={{padding:18}}>
+      <div className="eyebrow">Pending doctor verifications</div>
+      {pending.map(d=>(
+        <div key={d.doctor_id} style={{background:"var(--panel2)",border:"1px solid var(--line)",borderRadius:10,padding:"14px",marginBottom:10}}>
+          <div style={{fontWeight:600, marginBottom:8}}>Dr. {d.full_name} ({d.email})</div>
+          <div style={{fontSize:12.5,color:"var(--ink-dim)",marginBottom:12}}>License: {d.license_number} · Council: {d.medical_council}</div>
+          <div style={{display:"flex",gap:8}}>
+            <button className="ghost" onClick={()=>viewDocument(d.doctor_id)} disabled={!d.has_license_doc}>View License</button>
+            <button className="primary" onClick={()=>approve(d.doctor_id)}>Approve</button>
           </div>
-        ))}
-        {msg && <p style={{color:"var(--teal)",fontSize:13,marginTop:10}}>{msg}</p>}
-      </div>
-    </div>
+        </div>
+      ))}
+    </div></div>
   );
 }
 
 function App(){
-  // useAuth called unconditionally (Rules of Hooks) even though the admin
-  // page doesn't need it — branching happens only in the return below.
   const {token,role,name,isVerified,login,logout} = useAuth();
   const isAdminUrl = new URLSearchParams(location.search).get("admin")==="1";
-
-  useEffect(()=>{
-    if(isAdminUrl) document.title = "Admin Page";
-    else if(!token) document.title = "DFU Clinical Platform";
-    else if(role==="doctor") document.title = "Doctor Portal";
-    else document.title = "Patient Portal";
-  },[isAdminUrl,token,role]);
-
-  if(isAdminUrl) return <div className="wrap"><AdminPanel/></div>;
+  if(isAdminUrl) return <AdminPanel/>;
   if(!token) return <div className="wrap"><AuthForm onAuth={login}/></div>;
-  return role==="doctor"
-    ? <DoctorView token={token} name={name} isVerified={isVerified} logout={logout}/>
-    : <PatientView token={token} name={name} logout={logout}/>;
+  return role==="doctor" ? <DoctorView token={token} name={name} isVerified={isVerified} logout={logout}/> : <PatientView token={token} name={name} logout={logout}/>;
 }
-
 ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
 </script>
 </body>

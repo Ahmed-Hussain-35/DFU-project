@@ -10,3 +10,5 @@ __pycache__/
 best_model.pth
 dfu_app.db
 uploads/
+
+ml model/

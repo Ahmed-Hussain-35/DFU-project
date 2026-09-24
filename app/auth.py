@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 
 from .models import get_db, User
 
+
 SECRET_KEY = os.getenv("JWT_SECRET", "dev-secret-change-in-production")  # MUST override in real deploy
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 1 day
